@@ -22,17 +22,7 @@ public class Main {
         boolean startsWithJava = methods.isStarsWithJava("Java was created by Oracle"); //11. Проверить начинается-ли строка на "Java"
         String replaceAO = methods.replaceAWithO("Здесь нет символа 'а'."); //12.Заменить все символы "а" в строке на символ "о"
         String subStr = methods.substringFrom44to90(longString); //13. Получить подстроку с 44 символа по 90 символ
-        //System.out.println(subStr);
-        String[] stringsArray = methods.splitOnSpace(helloWorld); //14. Разбить строку по символу пробел
-                                                                // (т.е. чтобы каждое слово было отдельным элементом массива)
+        String[] stringsArray = methods.splitOnSpace(helloWorld); //14. Разбить строку по символу пробел (т.е. чтобы каждое слово было отдельным элементом массива)
         String reverseStr = methods.reverse("123456789"); //15. Поменять последовательность символов в строке на обратную.
-
-
-
-
-
-
     }
-
-
 }
