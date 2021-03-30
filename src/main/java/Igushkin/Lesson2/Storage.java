@@ -10,7 +10,9 @@ public class Storage<T> {
     private Cache<T> cache;
     private final int CACHE_CAPACITY = 10;
     private int storageCapacity = 10;
-    private int indexOfMostRightNotNullStorageElem = -1;
+    private final double FACTOR = 1.5;
+    /**Поле. Содержит индекс последнего заполненного (not null) элемента хранилища. Равно -1, если хранилище пустое.*/
+    private int lastIndex = -1;
 
     /**
      * Конструктор. Создает пустое хранилище и кэш для него.
@@ -35,7 +37,7 @@ public class Storage<T> {
             this.storage[i] = elements[i];
         }
         this.cache = new Cache<>(CACHE_CAPACITY);
-        this.indexOfMostRightNotNullStorageElem = storageCapacity - 1;
+        this.lastIndex = storageCapacity - 1;
     }
 
     /**
@@ -44,16 +46,20 @@ public class Storage<T> {
      */
     @SuppressWarnings("unchecked")
     public void add (T element) {
-        if (indexOfMostRightNotNullStorageElem == storageCapacity - 1) {
-            this.storageCapacity = (int) Math.round(storageCapacity * 1.5);
-            T[] newStorage = (T[]) new Object[storageCapacity];
-            for (int i = 0; i < storage.length; i++) {
-                newStorage[i] = storage[i];
-            }
-            storage = newStorage;
+        if (lastIndex == storageCapacity - 1) {
+            expandStorage(FACTOR);
         }
-        indexOfMostRightNotNullStorageElem++;
-        storage[indexOfMostRightNotNullStorageElem] = element;
+        lastIndex++;
+        storage[lastIndex] = element;
+    }
+
+    private void expandStorage(double factor) {
+        this.storageCapacity = (int) Math.round(storageCapacity * factor);
+        T[] newStorage = (T[]) new Object[storageCapacity];
+        for (int i = 0; i < storage.length; i++) {
+            newStorage[i] = storage[i];
+        }
+        storage = newStorage;
     }
 
     /**
@@ -61,18 +67,22 @@ public class Storage<T> {
      * Если есть, то сначала удаляет из кэша, потом из хранилища.
      */
     public void delete () {
-        if (cache.isPresent(indexOfMostRightNotNullStorageElem)) {
-            cache.delete(cache.get(indexOfMostRightNotNullStorageElem));
+        if (cache.isPresent(lastIndex)) {
+            cache.delete(cache.get(lastIndex));
         }
-        storage[indexOfMostRightNotNullStorageElem] = null;
-        indexOfMostRightNotNullStorageElem--;
+        storage[lastIndex] = null;
+        lastIndex--;
     }
 
     /**
-     * Очищает кэш.
+     * Очищает кэш. Очищает хранилище.
      */
     public void clear() {
         cache.clear();
+        for (int i = 0; i <= lastIndex; i++) {
+            storage[i] = null;
+        }
+        lastIndex = -1;
     }
 
     /**
@@ -80,7 +90,7 @@ public class Storage<T> {
      * @return Один элемент из хранилища.
      */
     public T getLast() {
-        return storage[indexOfMostRightNotNullStorageElem];
+        return storage[lastIndex];
     }
 
     /**
@@ -91,13 +101,13 @@ public class Storage<T> {
      * @return null, если было обращение к еще незаполненному элементу хранилища, иначе элемент из хранилища.
      */
     public T get(int index) {
-        if (index > indexOfMostRightNotNullStorageElem) {
+        if (index > lastIndex) {
             return null;
         }
         if (cache.isPresent(index)) {
             return cache.get(index).element;
         }
-        cache.add(new CacheElement<>(storage[index]), index);
+        cache.add(storage[index], index);
         return storage[index];
     }
 }

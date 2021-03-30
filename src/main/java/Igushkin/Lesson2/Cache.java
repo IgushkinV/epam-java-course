@@ -7,8 +7,9 @@ package Igushkin.Lesson2;
 public class Cache<T> {
 
     private int capacityOfCache;
-    private CacheElement[] cache;
-    private int indexOfMostRightNotNullCacheElement;
+    private CacheElement<T>[] cache;
+    /**Поле. Содержит индекс последнего ненулевого элемента в кэше. Если кэш пустой, равно -1. */
+    private int lastIndex;
 
     /**
      * Конструктор. Создает объект кэша с заданным размером.
@@ -16,8 +17,8 @@ public class Cache<T> {
      */
     public Cache(int capacityOfCache) {
         this.capacityOfCache = capacityOfCache;
-        this.cache = new CacheElement[capacityOfCache];
-        this.indexOfMostRightNotNullCacheElement = -1;
+        this.cache = (CacheElement<T>[]) new Object[capacityOfCache];
+        this.lastIndex = -1;
     }
 
     /**
@@ -26,27 +27,32 @@ public class Cache<T> {
      * Добавление происходит в конец кэша (в первый not-null елемент массива).
      * Если кэш заполнен, то удаляется элемент, дольше остальных не используемый,
      * затем новый элемент добавляется как самый недавно используемый.
-     * @param elementToAdd элемент для добавления в кэш
+     * @param newElement элемент для добавления в кэш
      * @param index уникальный для каждого элемента в кэше индекс
      */
-    public void add(CacheElement<T> elementToAdd, int index) {
+    public void add(T newElement, int index) {
         if (this.isPresent(index)) {
             this.get(index); //переставляет элемент последним в кэше
-            cache[indexOfMostRightNotNullCacheElement].element = elementToAdd.element;
-
+            cache[lastIndex].element = newElement;
         }
-        if (indexOfMostRightNotNullCacheElement < capacityOfCache - 1) { //Если кэш не заполнен полностью (либо пустой)
-            indexOfMostRightNotNullCacheElement++;
-            cache[indexOfMostRightNotNullCacheElement] = new CacheElement<>(elementToAdd.element);
-            cache[indexOfMostRightNotNullCacheElement].index = index;
+        if (lastIndex < capacityOfCache - 1) { //Если кэш не заполнен полностью (либо пустой)
+            lastIndex++;
+            cache[lastIndex] = new CacheElement<>(newElement, index);
             return;
         }
-        if (indexOfMostRightNotNullCacheElement == capacityOfCache - 1) { //Если кэш заполнен полностью
-            for (int i = 0; i < capacityOfCache - 1; i++) {
-                cache[i] = cache[i + 1];
-            }
-            cache[capacityOfCache - 1] = new CacheElement<>(elementToAdd.element);
-            cache[capacityOfCache - 1].index = index;
+        if (lastIndex == capacityOfCache - 1) { //Если кэш заполнен полностью
+            moveElements(0);
+            cache[capacityOfCache - 1] = new CacheElement<>(newElement,index);
+        }
+    }
+
+    /**
+     * Сдвигает элементы кэша на один влево.
+     * @param index этот элемент будет стерт при сдвиге.
+     */
+    private void moveElements(int index) {
+        for (int i = index; i < capacityOfCache - 1; i++) {
+            cache[i] = cache[i + 1];
         }
     }
 
@@ -56,7 +62,7 @@ public class Cache<T> {
      * @param element элемент для удаления
      */
     public void delete(CacheElement<T> element) {
-        if (indexOfMostRightNotNullCacheElement == -1) {
+        if (lastIndex == -1) {
             return;
         }
         int numForDelete = -1;
@@ -67,10 +73,8 @@ public class Cache<T> {
             }
         }
         if (numForDelete >= 0) {
-            for (int i = numForDelete; i < capacityOfCache - 1; i++) {
-                cache[i] = cache[i + 1];
-            }
-            indexOfMostRightNotNullCacheElement--;
+            moveElements(numForDelete);
+            lastIndex--;
         }
     }
 
@@ -81,10 +85,10 @@ public class Cache<T> {
      * Если такой элемент найден, возвращает true.
      */
     public boolean isPresent(CacheElement<T> element) {
-        if (indexOfMostRightNotNullCacheElement == -1) {
+        if (lastIndex == -1) {
             return false;
         }
-        for (int i = 0; i <= indexOfMostRightNotNullCacheElement; i++) {
+        for (int i = 0; i <= lastIndex; i++) {
             if (cache[i].equals(element)) {
                 return true;
             }
@@ -98,10 +102,10 @@ public class Cache<T> {
      * @return true или false
      */
     public boolean isPresent(int index) {
-        if (indexOfMostRightNotNullCacheElement == -1) {
+        if (lastIndex == -1) {
             return false;
         }
-        for (int i = 0; i <= indexOfMostRightNotNullCacheElement; i++) {
+        for (int i = 0; i <= lastIndex; i++) {
             if (cache[i] != null) {
                 if (cache[i].index == index) {
                     return true;
@@ -119,16 +123,16 @@ public class Cache<T> {
      */
     public CacheElement<T> get(int index) {
         CacheElement<T> returnElement = null;
-        if (indexOfMostRightNotNullCacheElement == -1) {
+        if (lastIndex == -1) {
             return null;
         }
-        for (int i = 0; i <= indexOfMostRightNotNullCacheElement; i++) {
+        for (int i = 0; i <= lastIndex; i++) {
             if (cache[i].index == index) {
                 returnElement = cache[i];
-                for (int j = i; j <= indexOfMostRightNotNullCacheElement - 1; j++) {
+                for (int j = i; j <= lastIndex - 1; j++) {
                     cache[j] = cache[j + 1];
                 }
-                cache[indexOfMostRightNotNullCacheElement] = returnElement;
+                cache[lastIndex] = returnElement;
                 break;
             }
         }
@@ -139,9 +143,9 @@ public class Cache<T> {
      * Очищает весь кэш.
      */
     public void clear() {
-       for (int i = 0; i <= indexOfMostRightNotNullCacheElement; i++) {
+       for (int i = 0; i <= lastIndex; i++) {
            cache[i] = null;
        }
-       indexOfMostRightNotNullCacheElement = -1;
+       lastIndex = -1;
     }
 }
