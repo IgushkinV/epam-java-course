@@ -3,11 +3,27 @@ package Igushkin.Lesson2;
 import java.util.Objects;
 
 public class CacheElement<T> {
-    T element;
-    int index;
+    private T element;
+    private int index;
 
     public CacheElement(T element, int index) {
         this.element = element;
+        this.index = index;
+    }
+
+    public T getElement() {
+        return element;
+    }
+
+    public void setElement(T element) {
+        this.element = element;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
         this.index = index;
     }
 

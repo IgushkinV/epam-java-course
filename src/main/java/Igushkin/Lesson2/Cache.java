@@ -33,7 +33,7 @@ public class Cache<T> {
     public void add(T newElement, int index) {
         if (this.isPresent(index)) {
             this.get(index); //переставляет элемент последним в кэше
-            cache[lastIndex].element = newElement;
+            cache[lastIndex].setElement(newElement);
         }
         if (lastIndex < capacityOfCache - 1) { //Если кэш не заполнен полностью (либо пустой)
             lastIndex++;
@@ -99,17 +99,15 @@ public class Cache<T> {
     /**
      * Определяет, имеет ли один из элементов кэша переданный индекс.
      * @param index
-     * @return true или false
+     * @return true или false. Если кэш пустой, возвращает false.
      */
     public boolean isPresent(int index) {
         if (lastIndex == -1) {
             return false;
         }
         for (int i = 0; i <= lastIndex; i++) {
-            if (cache[i] != null) {
-                if (cache[i].index == index) {
-                    return true;
-                }
+            if (cache[i] != null && cache[i].getIndex() == index) {
+                return true;
             }
         }
         return false;
@@ -127,7 +125,7 @@ public class Cache<T> {
             return null;
         }
         for (int i = 0; i <= lastIndex; i++) {
-            if (cache[i].index == index) {
+            if (cache[i].getIndex() == index) {
                 returnElement = cache[i];
                 for (int j = i; j <= lastIndex - 1; j++) {
                     cache[j] = cache[j + 1];
