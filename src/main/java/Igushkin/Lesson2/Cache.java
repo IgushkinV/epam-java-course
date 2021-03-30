@@ -13,11 +13,12 @@ public class Cache<T> {
 
     /**
      * Конструктор. Создает объект кэша с заданным размером.
-     * @param capacityOfCache
+     * @param capacityOfCache размер кэша.
      */
+    @SuppressWarnings("unchecked")
     public Cache(int capacityOfCache) {
         this.capacityOfCache = capacityOfCache;
-        this.cache = (CacheElement<T>[]) new Object[capacityOfCache];
+        this.cache = new CacheElement[capacityOfCache];
         this.lastIndex = -1;
     }
 
@@ -61,13 +62,13 @@ public class Cache<T> {
      * Если происходит запрос на удаление из пустого кэша, то просто выходит из метода.
      * @param element элемент для удаления
      */
-    public void delete(CacheElement<T> element) {
+    public void delete(T element) {
         if (lastIndex == -1) {
             return;
         }
         int numForDelete = -1;
         for (int i = 0; i < capacityOfCache; i++) {
-            if (cache[i].equals(element)) {
+            if (cache[i].getElement().equals(element)) {
                 numForDelete = i;
                 break;
             }

@@ -21,6 +21,7 @@ public class Storage<T> {
     public Storage() {
         this.storage = (T[]) new Object[storageCapacity];
         this.cache = new Cache<T>(CACHE_CAPACITY);
+        this.lastIndex = -1;
     }
 
     /**
@@ -33,11 +34,11 @@ public class Storage<T> {
             this.storageCapacity = elements.length;
         }
         this.storage = (T[]) new Object[storageCapacity];
-        for (int i= 0; i < storageCapacity; i++) {
-            this.storage[i] = elements[i];
+        for (int i= 0; i < elements.length; i++) {
+            storage[i] = elements[i];
         }
-        this.cache = new Cache<>(CACHE_CAPACITY);
-        this.lastIndex = storageCapacity - 1;
+        cache = new Cache<>(CACHE_CAPACITY);
+        lastIndex = elements.length - 1;
     }
 
     /**
@@ -68,7 +69,7 @@ public class Storage<T> {
      */
     public void delete () {
         if (cache.isPresent(lastIndex)) {
-            cache.delete(cache.get(lastIndex));
+            cache.delete(cache.get(lastIndex).getElement());
         }
         storage[lastIndex] = null;
         lastIndex--;
