@@ -105,7 +105,7 @@ public class Storage<T> {
             return null;
         }
         if (cache.isPresent(index)) {
-            return cache.get(index).element;
+            return cache.get(index).getElement();
         }
         cache.add(storage[index], index);
         return storage[index];
