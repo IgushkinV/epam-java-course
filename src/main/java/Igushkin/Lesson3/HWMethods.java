@@ -30,13 +30,17 @@ public class HWMethods {
      */
     public void findDuplicates(ArrayList<Human> humans) {
         System.out.println("Дублированные элементы в переданном ArrayList: ");
-        for (int i = 0; i < humans.size(); i++) {
-            Human humForComparison = humans.get(i);
-            for (int j = i + 1; j < humans.size(); j++) {
-                if (humForComparison.equals(humans.get(j))) {
-                    System.out.println(humForComparison);
-                    break;
-                }
+        HashMap<Human, Integer> frequencyMap = new HashMap<>();
+        for (Human human : humans) {
+            if (!frequencyMap.containsKey(human)) {
+                frequencyMap.put(human, 1);
+            } else {
+                frequencyMap.put(human, frequencyMap.get(human) + 1);
+            }
+        }
+        for (Map.Entry<Human, Integer> entry : frequencyMap.entrySet()) {
+            if (entry.getValue() > 1) {
+                System.out.println(entry.getKey());
             }
         }
     }
