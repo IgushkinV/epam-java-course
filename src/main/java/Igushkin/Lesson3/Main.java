@@ -36,5 +36,29 @@ public class Main {
         System.out.println();
         //10. Сортировка HashMap по значению
         methods.printSortedByValue(numMap);
+
+        // Дополнительно. Демонстрация MultiSortingMap
+        System.out.println("*******************");
+        MultiSortingMap<Integer, String> multiSortingMap = new MultiSortingMap(SortingMode.BY_KEY);
+        multiSortingMap.put(2, "Two");
+        multiSortingMap.put(1, "One");
+        multiSortingMap.put(3, "Three");
+        multiSortingMap.put(5, "Five");
+        multiSortingMap.put(4, "Four");
+        multiSortingMap.print();
+        multiSortingMap.sortByValue();
+        multiSortingMap.print();
+        System.out.println("The tail: " + multiSortingMap.getTail() + ", режим сортировки - " + multiSortingMap.getSortingMode());
+        System.out.println("The newest pair: " + multiSortingMap.getNewest()+ ", режим сортировки - " + multiSortingMap.getSortingMode());
+        multiSortingMap.put(0, "Zero");
+        System.out.println("The newest pair: " + multiSortingMap.getNewest() + ", режим сортировки - " + multiSortingMap.getSortingMode());
+        multiSortingMap.sortByKey();
+        multiSortingMap.put(8, "Eight");
+        System.out.println("The oldest pair: " + multiSortingMap.getOldest() + ", режим сортировки - " + multiSortingMap.getSortingMode());
+        System.out.println("The tail: " + multiSortingMap.getTail() + ", режим сортировки - " + multiSortingMap.getSortingMode());
+        multiSortingMap.sortByAddOrder();
+        multiSortingMap.print();
+        multiSortingMap.delete(2);
+        System.out.println(multiSortingMap.getOldest());
     }
 }
