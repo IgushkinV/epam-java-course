@@ -58,7 +58,6 @@ public class Storage<T> {
     @SuppressWarnings("unchecked")
     public void add (T element) throws MyNullElementException {
         if (element == null) {
-            log.error("В объект {} передан null вместо значения.", this.getClass().getSimpleName());
             throw new MyNullElementException("Передан null для хранения!");
         }
         if (lastIndex == storageCapacity - 1) {
@@ -86,7 +85,6 @@ public class Storage<T> {
      */
     public void delete () throws NegativeIndexException {
         if (lastIndex < 0) {
-            log.warn("Попытка удаления из пустого хранилища.");
             throw new NegativeIndexException("Удаление из пустого хранилища!");
         }
         if (cache.isPresent(lastIndex)) {
@@ -114,7 +112,6 @@ public class Storage<T> {
      */
     public T getLast() throws NegativeIndexException {
         if (lastIndex < 0) {
-            log.warn("Попытка получить последний элемент из пустого хранилища.");
             throw new NegativeIndexException("Попытка получить послений элемент из пустого хранилища!");
         }
         return storage[lastIndex];
@@ -130,7 +127,6 @@ public class Storage<T> {
      */
     public T get(int index) throws NegativeIndexException {
         if (index < 0) {
-            log.warn("Запрос элемента с отрицательным индексом: индекс = {}", index);
             throw new NegativeIndexException("Запрос элемента с отрицательным индексом!");
         }
         if (index > lastIndex) {
