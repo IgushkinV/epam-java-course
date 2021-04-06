@@ -45,4 +45,10 @@
         <level value="info" />
         <appender-ref ref="CACHE_LOG_FILE" />
     </logger>
+
+    <logger name="Igushkin.Lesson2.Main" additivity="false" >
+        <level value="info" />
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
 </configuration>
