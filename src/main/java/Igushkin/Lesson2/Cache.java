@@ -1,9 +1,12 @@
 package Igushkin.Lesson2;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Типизированный класс для создания кэша. Не содержит одинаковых элементов.
  * @param <T>
  */
+@Slf4j
 public class Cache<T> {
 
     private int capacityOfCache;
@@ -20,6 +23,7 @@ public class Cache<T> {
         this.capacityOfCache = capacityOfCache;
         this.cache = new CacheElement[capacityOfCache];
         this.lastIndex = -1;
+        log.info("Создание кэша. Должно быть только в файле.");
     }
 
     /**
@@ -142,9 +146,9 @@ public class Cache<T> {
      * Очищает весь кэш.
      */
     public void clear() {
-       for (int i = 0; i <= lastIndex; i++) {
-           cache[i] = null;
-       }
-       lastIndex = -1;
+        for (int i = 0; i <= lastIndex; i++) {
+            cache[i] = null;
+        }
+        lastIndex = -1;
     }
 }
