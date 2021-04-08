@@ -84,11 +84,27 @@ public class Filter {
                     } catch (NumberFormatException e) {
                         log.warn("Неправильный формат номера строки! Введите цифрами 0-9", e);
                     }
-
                 }
                 break;
             case "delete":
-                commandHandler = new MyDeleter(params[1]);
+                params = line.split(" ");
+                if (params.length < 2 || params.length > 3) {
+                    log.warn("Неверный набор параметров команды delete");
+                    break;
+                } else if (params.length == 2) {
+                    commandHandler = new MyDeleter(params[1]);
+                } else {
+                    try {
+                        int lineNumber = Integer.parseInt(params[1]);
+                        if (lineNumber < 0) {
+                            log.warn("Введен отрицательный номер строки!");
+                            return;
+                        }
+                        commandHandler = new MyDeleter(lineNumber, params[2]);
+                    } catch (NumberFormatException e) {
+                        log.warn("Неправильный формат номера строки! Введите цифрами 0-9", e);
+                    }
+                }
                 break;
             default:
                 log.info("Команда не распознана, повторите ввод.");

@@ -31,7 +31,7 @@ public class MyWriter implements CommandHandler {
     @Override
     public void handle() {
         if (this.lineNumber == -1) {
-            //Если добавляем записть в конец файла, номер строки не передан.
+            //Если добавляем запись в конец файла, номер строки не передан.
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,true))) {
                 writer.write(this.textToWrite + "\n");
             } catch (IOException e) {
