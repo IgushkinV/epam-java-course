@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * Класс для обработки переданной команды и записи переданного текста в файл.
+ */
 @Slf4j
 public class MyWriter implements CommandHandler {
 
@@ -18,56 +21,29 @@ public class MyWriter implements CommandHandler {
         this.lineNumber = -1;
         log.debug("Создан Writer для записи \"{}\" в конец файла {}", textToWrite, fileName);
     }
-    public MyWriter (int lineNumber, String fileName, String textToWrite) throws IOException {
-        if (lineNumber < 0) {
-            throw new IOException("Введен отрицательный номер строки");
-        }
+    public MyWriter (int lineNumber, String fileName, String textToWrite) {
         this.lineNumber = lineNumber;
         this.fileName = fileName;
         this.textToWrite = textToWrite;
         log.debug("Создан Writer для записи \"{}\" в файл {} начиная с {} строки", textToWrite, fileName, lineNumber);
     }
 
+    /**
+     * Добавляет строку либо в конец файла, либо на указанную позицию в соответствии с переданными в конструктор параметрами.
+     */
     @Override
     public void handle() {
         if (this.lineNumber == -1) {
             //Если добавляем запись в конец файла, номер строки не передан.
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,true))) {
-                writer.write(this.textToWrite + "\n");
+            try {
+                FileMethods.writeStringToEnd(textToWrite, fileName);
             } catch (IOException e) {
                 log.warn("Ошибка при попытке записи в файл", e);
             }
         } else {
             //Если номер строки передан
-            ArrayList<String> linesFromFile = new ArrayList<>();
-            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-                while (reader.ready()) {
-                    linesFromFile.add(reader.readLine());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //2 варианта записи
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-                //1 вариант - запись между существующих строк. Отсчет строк с 0.
-                if (lineNumber < linesFromFile.size()) {
-                    for (int i = 0; i < linesFromFile.size(); i++) {
-                        if (lineNumber == i) {
-                            writer.write(textToWrite + "\n");
-                        }
-                        writer.write(linesFromFile.get(i) + "\n");
-                    }
-                    //2 вариант - запись после существующих строк. Добавляет пустые при необходимости. Отсчет строк с 0.
-                } else {
-                    for (String line : linesFromFile) {
-                        writer.write(line + "\n");
-                    }
-                    for (int i = linesFromFile.size() + 1; i <= lineNumber; i++) {
-                        writer.newLine();
-                    }
-                    writer.write(textToWrite + "\n");
-                }
-                writer.flush();
+            try {
+                FileMethods.stringWriter(lineNumber, textToWrite, fileName);
             } catch (IOException e) {
                 log.warn("Ошибка при записи в файл.", e);
             }

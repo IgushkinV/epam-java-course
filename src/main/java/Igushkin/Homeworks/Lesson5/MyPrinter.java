@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * Класс, реализующий обработчик команды print
+ */
 @Slf4j
 public class MyPrinter implements CommandHandler {
 
@@ -14,19 +17,23 @@ public class MyPrinter implements CommandHandler {
     public MyPrinter (String fileName) {
         this.lineNumber = -1;
         this.fileName = fileName;
-        log.debug(fileName);
     }
     public MyPrinter (int lineNumber, String fileName)  {
         this.lineNumber = lineNumber;
         this.fileName = fileName;
     }
+
+    /**
+     * Печатает строку либо весь файл, соответственно переданным в конструктор параметрам.
+     */
     @Override
     public void handle() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            ArrayList<String> linesFromFile = new ArrayList<>();
-            while (reader.ready()) {
-                linesFromFile.add(reader.readLine());
-            }
+        if (!FileMethods.isFileExist(fileName)) {
+            log.warn("Файл не найден.");
+            return;
+        }
+        try {
+            ArrayList<String> linesFromFile = FileMethods.readFileToList(fileName);
             if (this.lineNumber == -1) {
                 for (String line : linesFromFile) {
                     log.info(line);

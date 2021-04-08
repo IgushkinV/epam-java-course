@@ -2,8 +2,6 @@ package Igushkin.Homeworks.Lesson5;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
 /**
  * Класс, содержащий в себе обработчики команд. Определяет, в какой обработчик должна быть передана команда.
  */
@@ -21,15 +19,19 @@ public class Filter {
      * Поле. Содержит первый параметр из массива параметоров params.
      */
     private String command;
+    /**
+     * Поле. Инициализируется соответствующим обработчиком коимнад.
+     */
     private CommandHandler commandHandler;
 
-
-    public Filter() {
-
-    }
-
     /**
-     * Проверяет строку на соответствие шаблону команд. Если недостаточно неверные параметры, отклоняет запрос.
+     * Проверяет строку на соответствие шаблону команд. Если неверные параметры, отклоняет запрос.
+     * Распознает три команды: add, print, delete.
+     * "add" - добавить текст в указанный файл;
+     * "print" - распечатать текст из указанного файла;
+     * "delete" - удалить строку из указанног файла.
+     * После распознавания команды определяет сколько было передано параметров для этой комнды.
+     * После определения команды и параметров вызывает соответствующий обработчик команд.
      * @param line
      */
     public void process(String line) {
@@ -44,9 +46,7 @@ public class Filter {
                     break;
                 }
                 this.params = halfsOfInputLine[0].split(" ");
-                log.debug("Половины, разделенные кавычками {} + {}", halfsOfInputLine[0], halfsOfInputLine[1]);
                 String stringToAdd = halfsOfInputLine[1].substring(0, halfsOfInputLine[1].length() - 1); //todo: Добавление текста без крайних кавычек
-                log.debug("Текст для добавления {}", stringToAdd);
                 if (params.length < 2) {
                     log.warn("Недостаточно параметров, повторите ввод.");
                     break;
@@ -58,11 +58,13 @@ public class Filter {
                 } else if (params.length == 3) {
                     try {
                         int lineNumber = Integer.parseInt(params[1]);
+                        if (lineNumber < 0) {
+                            log.warn("Введен отрицательный номер строки, используйте неотрицательный");
+                            break;
+                        }
                         commandHandler = new MyWriter(lineNumber, params[2], stringToAdd);
                     } catch (NumberFormatException e) {
                         log.warn("Неверный формат номера строки. Введите номер цифрами 0-9.", e);
-                    } catch (IOException e) {
-                        log.warn("Введен отрицательный индекс строки. Используйте неотрицательный.", e);
                     }
                 }
                 break;
