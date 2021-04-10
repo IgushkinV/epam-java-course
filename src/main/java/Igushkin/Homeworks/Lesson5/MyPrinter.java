@@ -3,7 +3,6 @@ package Igushkin.Homeworks.Lesson5;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.util.ArrayList;
 
 /**
  * Класс, реализующий обработчик команды print
@@ -11,43 +10,47 @@ import java.util.ArrayList;
 @Slf4j
 public class MyPrinter implements CommandHandler {
 
-    private int lineNumber;
-    private String fileName;
-
-    public MyPrinter (String fileName) {
-        this.lineNumber = -1;
-        this.fileName = fileName;
-    }
-    public MyPrinter (int lineNumber, String fileName)  {
-        this.lineNumber = lineNumber;
-        this.fileName = fileName;
-    }
-
     /**
-     * Печатает строку либо весь файл, соответственно переданным в конструктор параметрам.
+     * Печатает конкретную строку либо весь файл в соответствии с параметрами, переданными в строке запроса пользователя.
+     * @param line строка запроса пользователя
      */
     @Override
-    public void handle() {
-        if (!FileMethods.isFileExist(fileName)) {
-            log.warn("Файл не найден.");
+    public void handle(String line) {
+        String[] params = line.split(" ");
+        if (params.length < 2 || params.length > 3) {
+            log.warn("Неверный набор параметров команды print");
             return;
-        }
-        try {
-            ArrayList<String> linesFromFile = FileMethods.readFileToList(fileName);
-            if (this.lineNumber == -1) {
-                for (String line : linesFromFile) {
-                    log.info(line);
-                }
-            } else if (lineNumber > linesFromFile.size()){
-                log.warn("Номер строки превышает количество строк в файле! Номер последней строки {}", linesFromFile.size() - 1);
+        } else if (params.length == 2) { //Если запрос на печать всего файла, номер строки не передан.
+            String fileName = params[1];
+            if (!FileMethods.isFileExist(fileName)) {
+                log.warn("Файл не найден.");
                 return;
-            } else {
-                log.info(linesFromFile.get(lineNumber));
             }
-        } catch (FileNotFoundException e) {
-            log.warn("Не найден файл с именем {} ", fileName, e);
-        } catch (IOException e) {
-            log.warn("Ошибка при чтении файла {}", fileName, e);
+            try {
+                FileMethods.printFile(fileName);
+            } catch (IOException e) {
+                log.warn("Ошибка при печати файла {}", fileName);
+            }
+        } else { // Если запрос на печать конкретной строки, номер строки передан.
+            String fileName = params[2];
+            if (!FileMethods.isFileExist(fileName)) {
+                log.warn("Файл не найден.");
+                return;
+            }
+            try {
+                int lineNumber = Integer.parseInt(params[1]);
+                if (lineNumber < 0) {
+                    log.warn("Введен отрицательный номер строки!");
+                    return;
+                }
+                FileMethods.printLineFormFile(lineNumber, fileName);
+            } catch (NumberFormatException e) {
+                log.warn("Неправильный формат номера строки! Введите цифрами 0-9", e);
+            } catch (WrongLineNumberException e) {
+                log.warn("Номер строки больше, чем количество строк в файле", e);
+            } catch (IOException e) {
+                log.warn("Ошибка при чтении файла", e);
+            }
         }
     }
 }

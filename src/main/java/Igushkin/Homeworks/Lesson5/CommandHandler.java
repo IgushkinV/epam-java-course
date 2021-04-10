@@ -1,5 +1,5 @@
 package Igushkin.Homeworks.Lesson5;
 
 public interface CommandHandler {
-    public void handle() ;
+    void handle(String command) ;
 }

@@ -1,7 +1,6 @@
 package Igushkin.Homeworks.Lesson5;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**
@@ -51,35 +50,60 @@ public class FileMethods {
         }
     }
 
+    public static void printFile (String fileName) throws IOException {
+        ArrayList<String> linesFromFile = FileMethods.readFileToList(fileName);
+        for (String line : linesFromFile) {
+            System.out.println(line);
+        }
+    }
+
+    public static void printLineFormFile (int lineNumber, String fileName) throws IOException {
+        ArrayList<String> linesFromFile = FileMethods.readFileToList(fileName);
+        if (lineNumber > linesFromFile.size()){
+            throw new WrongLineNumberException("Номер строки превышает количество строк в файле!");
+        } else {
+            System.out.println(linesFromFile.get(lineNumber));
+        }
+    }
+
     /**
-     * Записывает переданную строку в файл на указанную позицию, сдвигая существующие в файле строки.
-     * @param lineNumber позиция для записи
-     * @param stringToWrite строка для записи
-     * @param fileName файл для записи
+     * Записывает строку в файл. Использовать, когда номер строки меньше количества строк в файле.
+     * @param lineNumber номер строки, на которую нужно записать
+     * @param fileName имя файла для записи
+     * @param lineToWrite строка, которую нужно записать
      * @throws IOException
      */
-    public static void stringWriter (int lineNumber, String stringToWrite, String fileName) throws IOException {
+    public static void writeInsideFile (int lineNumber, String fileName, String lineToWrite) throws IOException {
         ArrayList<String> linesFromFile = FileMethods.readFileToList(fileName);
-        //2 варианта записи
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            //1 вариант - запись между существующих строк. Отсчет строк с 0.
-            if (lineNumber < linesFromFile.size()) {
-                for (int i = 0; i < linesFromFile.size(); i++) {
-                    if (lineNumber == i) {
-                        writer.write(stringToWrite + "\n");
-                    }
-                    writer.write(linesFromFile.get(i) + "\n");
+            for (int i = 0; i < linesFromFile.size(); i++) {
+                if (lineNumber == i) {
+                    writer.write(lineToWrite + "\n");
                 }
-                //2 вариант - запись после существующих строк. Добавляет пустые при необходимости. Отсчет строк с 0.
-            } else {
-                for (String line : linesFromFile) {
-                    writer.write(line + "\n");
-                }
-                for (int i = linesFromFile.size() + 1; i <= lineNumber; i++) {
-                    writer.newLine();
-                }
-                writer.write(stringToWrite + "\n");
+                writer.write(linesFromFile.get(i) + "\n");
             }
+            writer.flush();
+        }
+    }
+
+    /**
+     * Записывает текст в файл на указанную строку. Использовать, если номер строки больше количества строк в файле.
+     * Добавляет пустые строки при необходимости.
+     * @param lineNumber номер строки для записи. Должен быть больше количества строк в файле.
+     * @param fileName имя файла для записи
+     * @param lineToWrite текст для записи в файл
+     * @throws IOException
+     */
+    public static void writeAfterFile (int lineNumber, String fileName, String lineToWrite) throws IOException {
+        ArrayList<String> linesFromFile = FileMethods.readFileToList(fileName);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (String lineFromFile : linesFromFile) {
+                writer.write(lineFromFile + "\n");
+            }
+            for (int i = linesFromFile.size() + 1; i <= lineNumber; i++) {
+                writer.newLine();
+            }
+            writer.write(lineToWrite + "\n");
             writer.flush();
         }
     }
@@ -90,9 +114,10 @@ public class FileMethods {
      * @param fileName файл для записи
      * @throws IOException
      */
-    public static void writeStringToEnd (String string, String fileName) throws IOException {
+    public static void writeStringToEnd (String fileName, String string) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,true))) {
             writer.write(string + "\n");
+            writer.flush();
         }
     }
 }
