@@ -18,6 +18,7 @@ public class Filter {
         this.handlersMap.put(Command.ADD, new MyWriter());
         this.handlersMap.put(Command.PRINT, new MyPrinter());
         this.handlersMap.put(Command.DELETE, new MyDeleter());
+        this.handlersMap.put(Command.WRONG, new WrongCommandHandler());
     }
 
     /**
@@ -31,7 +32,11 @@ public class Filter {
      */
     public void process(String line) {
         String[] params = line.split(" ");
+        if (params == null || params.length == 0) {
+            handlersMap.get(Command.WRONG).handle(line);
+            return;
+        }
         String command = params[0];
-        handlersMap.getOrDefault(Command.getCommandByString(command), new WrongCommandHandler()).handle(line);
+        handlersMap.getOrDefault(Command.getCommandByString(command), handlersMap.get(Command.WRONG)).handle(line);
     }
 }

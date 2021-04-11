@@ -6,7 +6,8 @@ import java.util.Map;
 public enum Command {
     ADD ("add"),
     PRINT ("print"),
-    DELETE ("delete");
+    DELETE ("delete"),
+    WRONG(null);
 
     private final String command;
 
@@ -25,6 +26,7 @@ public enum Command {
             COMMAND_MAP.put(com.getCommand(), com);
         }
     }
+
     public static Command getCommandByString (String str) {
         return COMMAND_MAP.get(str);
     }
