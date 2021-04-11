@@ -1,0 +1,34 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="Igushkin.Homeworks.Main" additivity="false">
+        <level value = "INFO" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="Igushkin.Homeworks.Lesson5.MyWriter" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="Igushkin.Homeworks.Lesson5.MyPrinter" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="Igushkin.Homeworks.Lesson5.MyDeleter" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="Igushkin.Homeworks.Lesson5.WrongCommandHandler" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="Igushkin.Homeworks.Lesson5.Filter" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+</configuration>
