@@ -12,12 +12,12 @@ public class Filter {
     /**
      * Поле. Содержит список команд и соответствующих им обработчиков.
      */
-    private HashMap<String, CommandHandler> handlersMap = new HashMap<>();
+    private HashMap<Command, CommandHandler> handlersMap = new HashMap<>();
 
     public Filter() {
-        this.handlersMap.put("add", new MyWriter());
-        this.handlersMap.put("print", new MyPrinter());
-        this.handlersMap.put("delete", new MyDeleter());
+        this.handlersMap.put(Command.ADD, new MyWriter());
+        this.handlersMap.put(Command.PRINT, new MyPrinter());
+        this.handlersMap.put(Command.DELETE, new MyDeleter());
     }
 
     /**
@@ -32,11 +32,6 @@ public class Filter {
     public void process(String line) {
         String[] params = line.split(" ");
         String command = params[0];
-        if (handlersMap.containsKey(command)) {
-            handlersMap.get(command).handle(line);
-        } else {
-            log.info("Команда не распознана, повторите ввод.");
-            return;
-        }
+        handlersMap.getOrDefault(Command.getCommandByString(command), new WrongCommandHandler()).handle(line);
     }
 }
