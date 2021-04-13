@@ -23,10 +23,6 @@ public class CacheElement<T> {
         return index;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

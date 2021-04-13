@@ -112,7 +112,7 @@ public class Storage<T> {
      */
     public T getLast() throws NegativeIndexException {
         if (lastIndex < 0) {
-            throw new NegativeIndexException("Попытка получить послений элемент из пустого хранилища!");
+            throw new NegativeIndexException("Попытка получить последний элемент из пустого хранилища!");
         }
         return storage[lastIndex];
     }

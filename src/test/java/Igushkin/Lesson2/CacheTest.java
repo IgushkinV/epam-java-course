@@ -1,0 +1,73 @@
+package Igushkin.Lesson2;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class CacheTest {
+    private int capacityOfCache = 1;
+    private int lastIndex;
+    int testIndex = 0;
+    String testString;
+
+    Cache<String> cache;
+    CacheElement<String> testElement;
+
+
+    @BeforeEach
+    void setUp() {
+        cache = new Cache<>(1);
+        testString = "test";
+        testElement = new CacheElement<>("test", 0);
+    }
+
+    @Test
+    void addReallyAddingElementToCache() {
+        boolean expectedResult = true;
+
+        cache.add("test",0);
+        boolean actualResult = cache.isPresent(testElement);
+        assertEquals(expectedResult, actualResult);
+
+    }
+
+    @Test
+    void deleteReallyDeletesFromCache() {
+        boolean expectedResult = false;
+        CacheElement<String> element = new CacheElement<>("test", 0);
+        cache.add(testString,0);
+        cache.delete(testString);
+        boolean actualResult = cache.isPresent(element);
+        assertEquals(expectedResult,actualResult);
+    }
+
+    @Test
+    void isPresentByIndexReturnsTrueWhenElementIsPresent() {
+        CacheElement<String> element = new CacheElement<>("test", 0);
+        cache.add(testString,0);
+        assertTrue(cache.isPresent(0));
+    }
+
+    @Test
+    void isPresentByElementReturnsTrueWhenElementIsPresent() {
+        CacheElement<String> element = new CacheElement<>("test", 0);
+        cache.add(testString,0);
+        assertTrue(cache.isPresent(element));
+    }
+
+    @Test
+    void getReturnsCorrectElement() {
+        cache.add(testString,0);
+        CacheElement<String> expectedResult = new CacheElement<>(testString, 0);
+        CacheElement<String> actualResult = cache.get(0);
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void clearReturnsCacheWithOnlyNulls() {
+        cache.add(testString, 0);
+        cache.clear();
+        assertEquals(null, cache.get(0));
+    }
+}
