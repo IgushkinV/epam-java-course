@@ -19,7 +19,7 @@ class StorageTest {
     @Test
     void addReallyAddingElementToStorage() throws NegativeIndexException {
         testStorage.add(testString);
-        assertTrue(testStorage.getLast() != null);
+        assertNotNull(testStorage.getLast());
     }
 
     @Test
@@ -107,9 +107,14 @@ class StorageTest {
         testStorage.add("1");
         testStorage.add("2");
         testStorage.add("3");
+        //Добавление в Cache происходит при получении из Storage
+        testStorage.get(0);
+        testStorage.get(1);
+        testStorage.get(2);
+        testStorage.get(3);
+        //Перестановка элемента в Cache последним и перемещение идущих после него на одну позицию.
         testStorage.get(1);
         String expected = "3";
         assertEquals(expected, testStorage.get(3));
-
     }
 }

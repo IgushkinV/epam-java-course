@@ -37,7 +37,6 @@ class CacheTest {
 
     @Test
     void isPresentByIndexReturnsTrueWhenElementIsPresent() {
-        CacheElement<String> element = new CacheElement<>("test", 0);
         cache.add(testString,0);
         assertTrue(cache.isPresent(0));
     }
