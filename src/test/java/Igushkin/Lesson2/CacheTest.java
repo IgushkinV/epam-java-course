@@ -6,11 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CacheTest {
-    private int capacityOfCache = 1;
-    private int lastIndex;
-    int testIndex = 0;
     String testString;
-
     Cache<String> cache;
     CacheElement<String> testElement;
 
@@ -24,22 +20,19 @@ class CacheTest {
 
     @Test
     void addReallyAddingElementToCache() {
-        boolean expectedResult = true;
-
         cache.add("test",0);
         boolean actualResult = cache.isPresent(testElement);
-        assertEquals(expectedResult, actualResult);
+        assertTrue(actualResult);
 
     }
 
     @Test
     void deleteReallyDeletesFromCache() {
-        boolean expectedResult = false;
         CacheElement<String> element = new CacheElement<>("test", 0);
         cache.add(testString,0);
         cache.delete(testString);
         boolean actualResult = cache.isPresent(element);
-        assertEquals(expectedResult,actualResult);
+        assertFalse(actualResult);
     }
 
     @Test
@@ -68,6 +61,6 @@ class CacheTest {
     void clearReturnsCacheWithOnlyNulls() {
         cache.add(testString, 0);
         cache.clear();
-        assertEquals(null, cache.get(0));
+        assertNull(cache.get(0));
     }
 }

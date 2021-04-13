@@ -67,7 +67,7 @@ class StorageTest {
     void clearReturnsStorageWithOnlyNulls() throws NegativeIndexException {
         testStorage.add(testString);
         testStorage.clear();
-        assertEquals(null, testStorage.get(0));
+        assertNull(testStorage.get(0));
     }
 
     @Test
@@ -99,5 +99,17 @@ class StorageTest {
         assertThrows(NegativeIndexException.class,
                 () -> testStorage.get(-1),
                 "Запрос элемента с отрицательным индексом!");
+    }
+
+    @Test
+    void getReturnsCorrectElementAfterCacheMovesElements() throws NegativeIndexException {
+        testStorage.add("0");
+        testStorage.add("1");
+        testStorage.add("2");
+        testStorage.add("3");
+        testStorage.get(1);
+        String expected = "3";
+        assertEquals(expected, testStorage.get(3));
+
     }
 }
