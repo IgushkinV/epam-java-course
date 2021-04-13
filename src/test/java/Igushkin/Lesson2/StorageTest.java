@@ -117,4 +117,16 @@ class StorageTest {
         String expected = "3";
         assertEquals(expected, testStorage.get(3));
     }
+
+    @Test
+    void getReturnsCorrectElementWhenCacheIsFull() throws NegativeIndexException {
+        //Размер кэша всегда равен 10.
+        for (int i = 0; i < 11; i++) {
+            testStorage.add(i+"");
+            testStorage.get(i); //Добавляет в кэш 11 элементов. Первый добавленный исчезает.
+        }
+        String expected = "0";
+        String actual = testStorage.get(0);
+        assertEquals(expected, actual);
+    }
 }
