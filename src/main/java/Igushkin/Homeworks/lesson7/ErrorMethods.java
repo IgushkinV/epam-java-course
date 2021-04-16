@@ -2,6 +2,9 @@ package Igushkin.Homeworks.lesson7;
 
 import java.util.ArrayList;
 
+/**
+ * Contains methods that cause OOM StackOverFlow errors.
+ */
 public class ErrorMethods {
 
     public static void methodWithStackOverflowError() {
