@@ -1,4 +1,4 @@
-package Igushkin.Lesson2;
+package igushkin.lesson2;
 
 
 /**

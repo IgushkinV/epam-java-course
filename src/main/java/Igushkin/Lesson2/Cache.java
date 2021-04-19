@@ -1,77 +1,76 @@
-package Igushkin.Lesson2;
+package igushkin.lesson2;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Типизированный класс для создания кэша. Не содержит одинаковых элементов.
+ * A typed class for creating a cache. The cache does not contain the same items.
  * @param <T>
  */
 @Slf4j
 public class Cache<T> {
 
-    private int capacityOfCache;
+    private int capacity;
     private CacheElement<T>[] cache;
-    /**Поле. Содержит индекс последнего ненулевого элемента в кэше. Если кэш пустой, равно -1. */
-    private int lastIndex;
+    /**Field. Contains the index of the last non-null item in the cache. If the cache is empty, it is -1. */
+    private int size;
 
     /**
-     * Конструктор. Создает объект кэша с заданным размером.
-     * @param capacityOfCache размер кэша.
+     * Constructor. Creates a cache object with the specified capacity.
+     * @param capacity cache capacity.
      */
     @SuppressWarnings("unchecked")
-    public Cache(int capacityOfCache) {
-        this.capacityOfCache = capacityOfCache;
-        this.cache = new CacheElement[capacityOfCache];
-        this.lastIndex = -1;
-        log.info("Создание кэша. Должно быть только в файле.");
+    public Cache(int capacity) {
+        this.capacity = capacity;
+        this.cache = new CacheElement[capacity];
+        this.size = -1;
+        log.info("Creating cache. Should only be in the file.");
     }
 
     /**
-     * Добавляет element в кэш. Проверяет на повторения, не добавляет повторяющиеся элементы.
-     * При попытке добавить элемент повторно отметит его как самый недавно используемый.
-     * Добавление происходит в конец кэша (в первый not-null елемент массива).
-     * Если кэш заполнен, то удаляется элемент, дольше остальных не используемый,
-     * затем новый элемент добавляется как самый недавно используемый.
-     * @param newElement элемент для добавления в кэш
-     * @param index уникальный для каждого элемента в кэше индекс
+     * Adds element to the cache. Checks for duplicates, does not add duplicate items.
+     * If trying to add an item, it will re-mark it as most recently used.
+     * Adding occurs to the end of the cache.
+     * If the cache is full, then the item that has not been used for the longest time is deleted.
+     * Then the new item is added as the most recently used.
+     * @param newElement item to add to cache
+     * @param index unique index for each item in the cache
      */
     public void add(T newElement, int index) {
         if (this.isPresent(index)) {
-            this.get(index); //переставляет элемент последним в кэше
-            cache[lastIndex].setElement(newElement);
+            this.get(index);
+            cache[size].setElement(newElement);
         }
-        if (lastIndex < capacityOfCache - 1) { //Если кэш не заполнен полностью (либо пустой)
-            lastIndex++;
-            cache[lastIndex] = new CacheElement<>(newElement, index);
+        if (size < capacity - 1) {
+            size++;
+            cache[size] = new CacheElement<>(newElement, index);
             return;
-        }
-        if (lastIndex == capacityOfCache - 1) { //Если кэш заполнен полностью
+        } else if (size == capacity - 1) {
             moveElements(0);
-            cache[capacityOfCache - 1] = new CacheElement<>(newElement,index);
+            cache[capacity - 1] = new CacheElement<>(newElement,index);
         }
     }
 
     /**
-     * Сдвигает элементы кэша на один влево.
-     * @param index этот элемент будет стерт при сдвиге.
+     * Shifts the items in the cache to the left by one.
+     * @param index this element will be erased on shift.
      */
     private void moveElements(int index) {
-        for (int i = index; i < capacityOfCache - 1; i++) {
+        for (int i = index; i < capacity - 1; i++) {
             cache[i] = cache[i + 1];
         }
     }
 
     /**
-     * Удаляет элемент из кэша. Удаляет пустоты из кэша, сдвигая оставшуюся часть кэша на удаленный элемент.
-     * Если происходит запрос на удаление из пустого кэша, то просто выходит из метода.
-     * @param element элемент для удаления
+     * Removes an item from the cache. Removes voids from the cache by shifting the remainder of the cache to the deleted item.
+     * If a request to delete from an empty cache occurs, it simply exits the method.
+     * @param element item to remove
      */
     public void delete(T element) {
-        if (lastIndex == -1) {
+        if (size == -1) {
             return;
         }
         int numForDelete = -1;
-        for (int i = 0; i < capacityOfCache; i++) {
+        for (int i = 0; i < capacity; i++) {
             if (cache[i].getElement().equals(element)) {
                 numForDelete = i;
                 break;
@@ -79,21 +78,21 @@ public class Cache<T> {
         }
         if (numForDelete >= 0) {
             moveElements(numForDelete);
-            lastIndex--;
+            size--;
         }
     }
 
     /**
-     * Определяет, есть ли element в кэше.
+     * Determines if element is in the cache.
      * @param element
-     * @return false, если такого элемента нет в кэше, либо происходит обращение к пустому кэшу.
-     * Если такой элемент найден, возвращает true.
+     * @return false, if there is no such item in the cache, or an empty cache is accessed.
+     * If such an element is found, it returns true.
      */
     public boolean isPresent(CacheElement<T> element) {
-        if (lastIndex == -1) {
+        if (size == -1) {
             return false;
         }
-        for (int i = 0; i <= lastIndex; i++) {
+        for (int i = 0; i <= size; i++) {
             if (cache[i].equals(element)) {
                 return true;
             }
@@ -102,15 +101,15 @@ public class Cache<T> {
     }
 
     /**
-     * Определяет, имеет ли один из элементов кэша переданный индекс.
+     * Determines whether one of the cache entries has an index passed in.
      * @param index
-     * @return true или false. Если кэш пустой, возвращает false.
+     * @return true или false. If the cache is empty, returns false.
      */
     public boolean isPresent(int index) {
-        if (lastIndex == -1) {
+        if (size == -1) {
             return false;
         }
-        for (int i = 0; i <= lastIndex; i++) {
+        for (int i = 0; i <= size; i++) {
             if (cache[i] != null && cache[i].getIndex() == index) {
                 return true;
             }
@@ -119,23 +118,21 @@ public class Cache<T> {
     }
 
     /**
-     * Получает объект из кэша, проверяя его поле index. При нахождении элемента в кэше помечает его как самый недавно использованный.
+     * Retrieves an object from the cache by checking its index field. When an item is found in the cache, marks it as most recently used.
      * @param   index
-     * @return  null, если произошло обращение к пустому кэшу, или объект из кэша с соответствующим индексом не найден,
-     *          либо найденный объект кэша.
+     * @return null if an empty cache was accessed, or an object from the cache with the corresponding index was not found,
+     * or found cache object.
      */
     public CacheElement<T> get(int index) {
         CacheElement<T> returnElement = null;
-        if (lastIndex == -1) {
+        if (size == -1) {
             return null;
         }
-        for (int i = 0; i <= lastIndex; i++) {
+        for (int i = 0; i <= size; i++) {
             if (cache[i].getIndex() == index) {
                 returnElement = cache[i];
-                for (int j = i; j <= lastIndex - 1; j++) {
-                    cache[j] = cache[j + 1];
-                }
-                cache[lastIndex] = returnElement;
+                moveElements(i);
+                cache[size] = returnElement;
                 break;
             }
         }
@@ -143,12 +140,12 @@ public class Cache<T> {
     }
 
     /**
-     * Очищает весь кэш.
+     * Clears the cache.
      */
     public void clear() {
-        for (int i = 0; i <= lastIndex; i++) {
+        for (int i = 0; i <= size; i++) {
             cache[i] = null;
         }
-        lastIndex = -1;
+        size = -1;
     }
 }

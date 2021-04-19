@@ -35,18 +35,18 @@
         </encoder>
     </appender>
 
-    <logger name="Igushkin.Lesson2.Storage" additivity="false" >
+    <logger name="igushkin.lesson2.Storage" additivity="false" >
         <level value="warn" />
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STORAGE_LOG_FILE"/>
     </logger>
 
-    <logger name="Igushkin.Lesson2.Cache"  additivity="false" >
+    <logger name="igushkin.lesson2.Cache"  additivity="false" >
         <level value="info" />
         <appender-ref ref="CACHE_LOG_FILE" />
     </logger>
 
-    <logger name="Igushkin.Lesson2.Main" additivity="false" >
+    <logger name="igushkin.lesson2.Main" additivity="false" >
         <level value="info" />
         <appender-ref ref="STDOUT"/>
     </logger>
