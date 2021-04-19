@@ -1,0 +1,124 @@
+241  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+243  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+243  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+245  [main] INFO  Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения
+530  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+530  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+538  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+538  [main] INFO  Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения
+469  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+484  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+484  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+484  [main] INFO  Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения
+480  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+480  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+480  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+471  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+474  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+474  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища
+474  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+489  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+489  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+489  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+492  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+492  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+500  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+500  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+500  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+500  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+510  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+510  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+514  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+514  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+514  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+518  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+492  [main] DEBUG Igushkin.Lesson4.Storage - Пустое хранилище создано с размером 10, размер кэша 10
+496  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента One
+496  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Two
+496  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Three
+496  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента AnotherOne
+496  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+496  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+496  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+496  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+496  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+496  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Elena
+496  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+496  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Должно быть в консоли и в файле
+500  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+500  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+487  [main] DEBUG Igushkin.Lesson4.Storage - Пустое хранилище создано с размером 10, размер кэша 10
+487  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента One
+487  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Two
+487  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Three
+487  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента AnotherOne
+491  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+491  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+510  [main] DEBUG Igushkin.Lesson4.Storage - Пустое хранилище создано с размером 10, размер кэша 10
+514  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента One
+514  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Two
+514  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Three
+514  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента AnotherOne
+514  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+514  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+514  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+514  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+514  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+514  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+514  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Elena
+518  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером 10, размер кэша 10
+518  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+518  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+518  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+464  [main] DEBUG Igushkin.Lesson4.Storage - Пустое хранилище создано с размером 10, размер кэша 10
+468  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента One
+468  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Two
+468  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Three
+468  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента AnotherOne
+472  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером: 10, размер кэша: 10, количество элементов в хранилище: 1
+472  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+472  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+472  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+472  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером: 10, размер кэша: 10, количество элементов в хранилище: 5
+472  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+476  [main] DEBUG Igushkin.Lesson4.Storage - Добавление элемента Elena
+476  [main] DEBUG Igushkin.Lesson4.Storage - Хранилище создано с размером: 10, размер кэша: 10, количество элементов в хранилище: 5
+476  [main] INFO  Igushkin.Lesson4.Storage - Создание хранилища. Лог должен быть в консоли и в файле.
+476  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+476  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+581  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+585  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+585  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+589  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+480  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+488  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+488  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+492  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+540  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+548  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+548  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+552  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+544  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+544  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+548  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+548  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+504  [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+508  [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+508  [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+512  [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+2021-04-05 16:34:16,913 [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+2021-04-05 16:34:16,917 [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+2021-04-05 16:34:16,917 [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+2021-04-05 16:34:16,921 [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+2021-04-05 16:35:38,227 [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+2021-04-05 16:35:38,235 [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+2021-04-05 16:35:38,235 [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+2021-04-05 16:35:38,239 [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+2021-04-05 16:36:24,830 [main] WARN  Igushkin.Lesson4.Storage - Попытка получить последний элемент из пустого хранилища.
+2021-04-05 16:36:24,830 [main] WARN  Igushkin.Lesson4.Storage - Попытка удаления из пустого хранилища.
+2021-04-05 16:36:24,834 [main] WARN  Igushkin.Lesson4.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+2021-04-05 16:36:24,838 [main] ERROR Igushkin.Lesson4.Storage - В объект Storage передан null вместо значения.
+2021-04-06 11:50:34,911 [main] WARN  Igushkin.Lesson2.Storage - Попытка получить последний элемент из пустого хранилища.
+2021-04-06 11:50:34,911 [main] WARN  Igushkin.Lesson2.Storage - Попытка удаления из пустого хранилища.
+2021-04-06 11:50:34,911 [main] WARN  Igushkin.Lesson2.Storage - Запрос элемента с отрицательным индексом: индекс = -1
+2021-04-06 11:50:34,911 [main] ERROR Igushkin.Lesson2.Storage - В объект Storage передан null вместо значения.
