@@ -2,6 +2,8 @@ package igushkin.lesson2;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Array;
+
 /**
  * A typed class for creating a cache. The cache does not contain the same items.
  *
@@ -25,7 +27,7 @@ public class Cache<T> {
     @SuppressWarnings("unchecked")
     public Cache(int capacity) {
         this.capacity = capacity;
-        this.cache = new CacheElement[capacity];
+        this.cache = (CacheElement<T>[]) new CacheElement[capacity];
         this.size = -1;
         log.debug("Creating cache. Cache capacity is {}", this.capacity);
     }
