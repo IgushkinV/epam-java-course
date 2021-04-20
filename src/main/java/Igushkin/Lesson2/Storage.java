@@ -1,17 +1,19 @@
 package igushkin.lesson2;
 
+import igushkin.lesson2.exceptions.MyNullElementException;
+import igushkin.lesson2.exceptions.NegativeIndexException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * A generic data store class.
+ * Stores data. Generic class.
  *
  * @param <T>
  */
 @Slf4j
 public class Storage<T> {
 
-    private final int CACHE_CAPACITY = 10;
-    private final double FACTOR = 1.5;
+    private final int cacheCapacity = 10;
+    private final double factor = 1.5;
 
     private T[] storage;
     private Cache<T> cache;
@@ -27,13 +29,14 @@ public class Storage<T> {
     @SuppressWarnings("unchecked")
     public Storage() {
         this.storage = (T[]) new Object[capacity];
-        this.cache = new Cache<T>(CACHE_CAPACITY);
+        this.cache = new Cache<>(cacheCapacity);
         this.size = -1;
-        log.debug("Empty storage created with capacity {}, cache capacity {}", this.capacity, this.CACHE_CAPACITY);
+        log.debug("Empty storage created with capacity {}, cache capacity {}", this.capacity, this.cacheCapacity);
     }
 
     /**
-     * Constructor. Creates a data store from the passed array. Creates a cache of the size of the passed array and default capacity.
+     * Constructor. Creates a data store from the passed array.
+     * Creates a cache of the size of the passed array and default capacity.
      *
      * @param elements generic array.
      */
@@ -44,37 +47,29 @@ public class Storage<T> {
         }
         this.storage = (T[]) new Object[capacity];
         System.arraycopy(elements, 0, storage, 0, elements.length);
-        cache = new Cache<>(CACHE_CAPACITY);
+        cache = new Cache<>(cacheCapacity);
         size = elements.length - 1;
         log.debug("The storage was created with capacity: {}, cache capacity: {}, number of items in the storage: {}",
-                this.capacity, this.CACHE_CAPACITY, this.size + 1);
-        log.info("Storage creation. The log should be in the console and in the file.");
+                this.capacity, this.cacheCapacity, this.size + 1);
     }
 
     /**
-     * Adds an item to the store. If the storage size limit is reached, then the storage capacity is increased by 1.5 times.
+     * Adds an item to the store. If the storage size limit is reached,
+     * then the storage capacity is increased by 1.5 times.
      *
      * @param element item to add.
      * @throws MyNullElementException when trying to add null to the store.
      */
-    @SuppressWarnings("unchecked")
     public void add(T element) throws MyNullElementException {
         if (element == null) {
-            throw new MyNullElementException("Passed null for storage!");
+            throw new MyNullElementException("add() - Passed null for storage!");
         }
         if (size == capacity - 1) {
-            expandStorage(FACTOR);
+            expandStorage(factor);
         }
         size++;
         storage[size] = element;
-        log.debug("Adding an item {}", element.toString());
-    }
-
-    private void expandStorage(double factor) {
-        this.capacity = (int) Math.round(capacity * factor);
-        T[] newStorage = (T[]) new Object[capacity];
-        System.arraycopy(storage, 0, newStorage, 0, storage.length);
-        storage = newStorage;
+        log.debug("add() - Adding the item {}", element.toString());
     }
 
     /**
@@ -92,6 +87,7 @@ public class Storage<T> {
         }
         storage[size] = null;
         size--;
+        log.debug("delete() - last element was deleted from store");
     }
 
     /**
@@ -103,6 +99,7 @@ public class Storage<T> {
             storage[i] = null;
         }
         size = -1;
+        log.debug("clear() - the store and the cache was cleared");
     }
 
     /**
@@ -115,12 +112,13 @@ public class Storage<T> {
         if (isStorageEmpty()) {
             throw new MyNullElementException("Trying to get the last item from the empty store!");
         }
+        log.debug("getLast() - the last element was returned");
         return storage[size];
     }
 
     /**
      * Gets an item from the store by its index within the store.
-     * First checks if there is such an item in the cache. If so, it returns the item from the cache without accessing the storage.
+     * First checks if there is such an item in the cache.
      * If the object is not in the cache, then it adds the object to the cache.
      *
      * @param index item number in the store
@@ -136,7 +134,20 @@ public class Storage<T> {
             return cache.get(index).getElement();
         }
         cache.add(storage[index], index);
-        return storage[index];
+        T returnedElement = storage[index];
+        log.debug("get() - element {} was returned from the store", returnedElement);
+        return returnedElement;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void expandStorage(double factor) {
+        int newCapacity = (int) Math.round(capacity * factor);
+        log.debug("expandStorage() - The store was expanded. Old capacity = {}, new capacity = {}",
+                this.capacity, newCapacity);
+        this.capacity = newCapacity;
+        T[] newStorage = (T[]) new Object[capacity];
+        System.arraycopy(storage, 0, newStorage, 0, storage.length);
+        storage = newStorage;
     }
 
     private boolean isStorageEmpty() {

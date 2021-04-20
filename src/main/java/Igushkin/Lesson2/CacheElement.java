@@ -1,10 +1,15 @@
 package igushkin.lesson2;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 @EqualsAndHashCode
+@Getter
+@Setter
 public class CacheElement<T> {
-    @Getter @Setter private T element;
-    @Getter @Setter private int index;
+    private T element;
+    private int index;
 }

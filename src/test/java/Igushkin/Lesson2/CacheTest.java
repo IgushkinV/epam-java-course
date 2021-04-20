@@ -1,4 +1,4 @@
-package Igushkin.Lesson2;
+package igushkin.lesson2;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +30,10 @@ class CacheTest {
     void deleteReallyDeletesFromCache() {
         CacheElement<String> element = new CacheElement<>("test", 0);
         cache.add(testString,0);
+
         cache.delete(testString);
         boolean actualResult = cache.isPresent(element);
+
         assertFalse(actualResult);
     }
 
@@ -45,14 +47,17 @@ class CacheTest {
     void isPresentByElementReturnsTrueWhenElementIsPresent() {
         CacheElement<String> element = new CacheElement<>("test", 0);
         cache.add(testString,0);
+
         assertTrue(cache.isPresent(element));
     }
 
     @Test
     void getReturnsCorrectElement() {
-        cache.add(testString,0);
         CacheElement<String> expectedResult = new CacheElement<>(testString, 0);
+        cache.add(testString,0);
+
         CacheElement<String> actualResult = cache.get(0);
+
         assertEquals(expectedResult, actualResult);
     }
 

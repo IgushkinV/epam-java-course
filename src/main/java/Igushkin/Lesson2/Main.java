@@ -1,5 +1,6 @@
 package igushkin.lesson2;
 
+import igushkin.lesson2.exceptions.MyNullElementException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -44,9 +45,5 @@ public class Main {
         } catch (MyNullElementException e) {
             log.warn("Запрос последнего элемента из пустого хранилища.", e);
         }
-        //Метод, выбрасывающий непроверяемое исключение. Программа не выполняется дальше.
-        nameStorage.add(null);
-        //Этот код не выполнится.
-        System.out.println(nameStorage.getLast());
     }
 }
