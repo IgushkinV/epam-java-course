@@ -112,7 +112,7 @@ public class AnnotationProcessor {
     private boolean setFromSetterAnnotation(Field field, Object pojoObject) {
         log.debug("setFromSetterAnnotation() - start to search setter to field {}", field.getName());
         log.trace("setFromSetterAnnotation() - field type is {}", field.getType());
-        log.trace("field type .equals(int) {}", field.getType().equals(int.class));
+        log.trace("field type .equals(int) {}", field.getType().equals(Integer.class));
         log.trace("field type .equals(String) {}", field.getType().equals(String.class));
         boolean result = false;
         try {
@@ -198,7 +198,7 @@ public class AnnotationProcessor {
     private boolean trySetValue(Field field, Object pojoObject, Value annotation) {
         boolean result = false;
         try {
-            if (field.getType().equals(int.class)) {
+            if (field.getType().equals(Integer.class) || field.getType().equals(int.class)) {
                 setInt(field, pojoObject, annotation);
                 result = true;
             } else if (field.getType().equals(String.class)) {

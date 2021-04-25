@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Tests methods of {@link AnnotationProcessor} class.
+ */
 public class AnnotationProcessorTest {
     public AnnotationProcessor processor;
     public Human human;
