@@ -1,5 +1,6 @@
 package com.igushkin.homeworks.lesson9.pojoClasses;
 
+import com.igushkin.homeworks.lesson9.AnnotationProcessor;
 import com.igushkin.homeworks.lesson9.annotations.Entity;
 import com.igushkin.homeworks.lesson9.annotations.Value;
 
