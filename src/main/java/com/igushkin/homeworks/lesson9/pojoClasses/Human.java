@@ -9,16 +9,16 @@ import com.igushkin.homeworks.lesson9.annotations.Value;
  */
 @Entity
 public class Human {
-    @Value("10")
+    @Value(value = "10")
     private int age;
-    @Value("Strange")
+    @Value(value = "Strange", path = "name")
     private String name;
 
     public int getAge() {
         return age;
     }
 
-    @Value
+    @Value(value = "40", path = "Age")
     public void setAge(int age) {
         this.age = age;
     }
@@ -27,7 +27,6 @@ public class Human {
         return name;
     }
 
-    @Value("Not So Strange")
     public void setName(String name) {
         this.name = name;
     }
