@@ -43,14 +43,7 @@ public class AnnotationProcessorTest {
     @Test
     @DisplayName("throws NoValueAnnotationException when class has @Entity and no @Value")
     public void throwsNoValueAnnotationException() {
-        @Entity
-        class Test{
-            int age;
-            String name;
-            public void setAge(int age) {}
-            public void setName(String name) {}
-        }
-        Test test = new Test();
+        TestWithOnlyEntity test = new TestWithOnlyEntity();
 
         assertThrows(NoValueAnnotationException.class, () ->
                 processor.handlePojo(test));
@@ -99,12 +92,28 @@ public class AnnotationProcessorTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    @DisplayName("Throws IllegalStateException when has no @Entity but has one @Value on method")
+    public void throwsIllegalStateException() {
+        TestWithOnlyValueOnMethod test = new TestWithOnlyValueOnMethod();
+        assertThrows(IllegalStateException.class, () ->
+                processor.handlePojo(test));
+    }
+
     @Entity
     class TestWithOnlyEntity{
         int age;
         String name;
         public void setAge(int age) {}
         public void setName(String name) {}
+    }
+
+    class TestWithOnlyValueOnMethod {
+        int age;
+        String name;
+        @Value
+        public void setAge (int age) {}
+        public void setName (String name) {}
     }
 
     @Entity
