@@ -5,6 +5,7 @@ import com.igushkin.homeworks.lesson9.annotations.Entity;
 import com.igushkin.homeworks.lesson9.annotations.Value;
 import com.igushkin.homeworks.lesson9.exceptions.NoValueAnnotationException;
 import com.igushkin.homeworks.lesson9.exceptions.TypeUnsupportedException;
+import com.igushkin.homeworks.lesson9.fileUtilities.FileUtilities;
 import com.igushkin.homeworks.lesson9.pojoClasses.Cat;
 import com.igushkin.homeworks.lesson9.pojoClasses.Human;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,7 +78,8 @@ public class AnnotationProcessorTest {
     public void testSettingValueFromFileUsingFieldAnnotation() throws IOException {
         String fullPath = "src/main/resources/file.txt";
         int expected = 123;
-        processor.useValuesFromPath(Path.of(fullPath));
+        Map<String, String> firstPathValueMap = FileUtilities.readEntriesFromFile(Path.of(fullPath)).get(0);
+        processor.setPathValueMap(firstPathValueMap);
         TestSetFromFileUsingFieldAnnotation test = new TestSetFromFileUsingFieldAnnotation();
         processor.handlePojo(test);
         int actual = test.age;
@@ -86,14 +90,14 @@ public class AnnotationProcessorTest {
     public void testSettingValueFromFileUsingSetterAnnotation() throws IOException {
         String fullPath = "src/main/resources/file.txt";
         String expected = "FirstName";
-        processor.useValuesFromPath(Path.of(fullPath));
+        Map<String, String> firstPathValueMap = FileUtilities.readEntriesFromFile(Path.of(fullPath)).get(0);
+        processor.setPathValueMap(firstPathValueMap);
         TestSetFromFileUsingSetterAnnotation test = new TestSetFromFileUsingSetterAnnotation();
         processor.handlePojo(test);
         String actual = test.name;
 
         assertEquals(expected, actual);
     }
-
 
     @Entity
     class TestWithOnlyEntity{
@@ -130,5 +134,4 @@ public class AnnotationProcessorTest {
         @Value(value = "First", path = "name")
         public void setName(String name) {}
     }
-
 }
