@@ -5,9 +5,9 @@
         </encoder>
     </appender>
 
-    <logger name="" additivity="false" >
-        <level value="warn" />
+    <root additivity="false" >
+        <level value="info" />
         <appender-ref ref="STDOUT"/>
-    </logger>
+    </root>
 
 </configuration>
