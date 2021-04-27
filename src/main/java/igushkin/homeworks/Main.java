@@ -30,8 +30,8 @@ public class Main {
         } catch (IOException e) {
             log.error("main() - Error during reading file {}", PATH.getFileName(), e);
         }
-        String dateOfDoomsDay = taskOne.makeDateOfDoomsday(count).format(DateTimeFormatter.ISO_DATE_TIME);
-        String dateOfDoomsDay2 = taskOne.oldMakeDateOfDoomsday(count2).format(DateTimeFormatter.ISO_DATE_TIME);
+        String dateOfDoomsDay = taskOne.makeDateOfDoomsday(count);
+        String dateOfDoomsDay2 = taskOne.oldMakeDateOfDoomsday(count2);
         log.info("main() - Using Streams. Date of the end of the world: {}", dateOfDoomsDay);
         log.info("main() - Without Streams. Date of the end of the world: {}", dateOfDoomsDay2);
     }

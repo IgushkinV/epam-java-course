@@ -99,7 +99,7 @@ class TaskOneTest {
     }
 
     @Test
-    public void testReadAndCountUUIDsReturn() throws IOException {
+    public void testReadAndCountUUIDsReturnOne() throws IOException {
         String testString = "0a1b2c3d4e5f9999999999";//sum of digits = 105
         String testString2 = "0a1b2c3d4e5f999999999"; //sum of digits = 96
         long expected = 1;
@@ -111,7 +111,7 @@ class TaskOneTest {
     }
 
     @Test
-    public void testOldReadAndCountUUIDsReturn() throws IOException {
+    public void testOldReadAndCountUUIDsReturnOne() throws IOException {
         String testString = "0a1b2c3d4e5f9999999999";//sum of digits = 105
         String testString2 = "0a1b2c3d4e5f999999999"; //sum of digits = 96
         long expected = 1;
@@ -127,9 +127,10 @@ class TaskOneTest {
         ZonedDateTime nowZoneMinus8 = ZonedDateTime.now(ZoneId.of("UTC-8"));
         Month expected = nowZoneMinus8.plusMonths(1).getMonth();
 
-        Month actual = taskOne.makeDateOfDoomsday(100).getMonth();
+        Month actual = ZonedDateTime.parse(taskOne.makeDateOfDoomsday(100)).getMonth();
 
         assertEquals(expected, actual);
+
     }
 
     @Test
@@ -137,7 +138,7 @@ class TaskOneTest {
         ZonedDateTime nowZoneMinus8 = ZonedDateTime.now(ZoneId.of("UTC-8"));
         Month expected = nowZoneMinus8.plusMonths(1).getMonth();
 
-        Month actual = taskOne.oldMakeDateOfDoomsday(100).getMonth();
+        Month actual = ZonedDateTime.parse(taskOne.oldMakeDateOfDoomsday(100)).getMonth();
 
         assertEquals(expected, actual);
     }
