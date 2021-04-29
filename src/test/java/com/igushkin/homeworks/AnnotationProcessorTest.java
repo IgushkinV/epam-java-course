@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -52,7 +55,7 @@ public class AnnotationProcessorTest {
 
     @Test
     public void setHumanNameFromFieldAnnotation() {
-        String expected = "Not So Strange";
+        String expected = "Strange";
 
         processor.handlePojo(human);
         String actual = human.getName();
@@ -67,6 +70,31 @@ public class AnnotationProcessorTest {
         assertThrows(TypeUnsupportedException.class, () ->
                 processor.handlePojo(test));
     }
+
+    @Test
+    public void testSettingValueFromFileUsingFieldAnnotation() throws IOException {
+        String fullPath = "src/main/resources/file.txt";
+        int expected = 123;
+        processor.useValuesFromPath(Path.of(fullPath));
+        TestSetFromFileUsingFieldAnnotation test = new TestSetFromFileUsingFieldAnnotation();
+        processor.handlePojo(test);
+        int actual = test.age;
+
+        assertEquals(expected,actual);
+    }
+    @Test
+    public void testSettingValueFromFileUsingSetterAnnotation() throws IOException {
+        String fullPath = "src/main/resources/file.txt";
+        String expected = "FirstName";
+        processor.useValuesFromPath(Path.of(fullPath));
+        TestSetFromFileUsingSetterAnnotation test = new TestSetFromFileUsingSetterAnnotation();
+        processor.handlePojo(test);
+        String actual = test.name;
+
+        assertEquals(expected, actual);
+    }
+
+
     @Entity
     class TestWithOnlyEntity{
         int age;
@@ -82,6 +110,25 @@ public class AnnotationProcessorTest {
 
         @Value("no")
         public void setIsAdult(boolean isAdult) {}
-
     }
+
+    @Entity
+    static class TestSetFromFileUsingFieldAnnotation{
+        @Value(value = "50", path = "Age")
+        int age;
+        String name;
+        public void setAge(int age) {}
+        @Value(value = "First", path = "name")
+        public void setName(String name) {}
+    }
+
+    @Entity
+    static class TestSetFromFileUsingSetterAnnotation{
+        int age;
+        String name;
+        public void setAge(int age) {}
+        @Value(value = "First", path = "name")
+        public void setName(String name) {}
+    }
+
 }

@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface Value {
     String value() default "default" ;
+    String path() default "";
+
 }

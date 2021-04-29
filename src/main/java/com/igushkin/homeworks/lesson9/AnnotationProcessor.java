@@ -4,10 +4,14 @@ import com.igushkin.homeworks.lesson9.annotations.Entity;
 import com.igushkin.homeworks.lesson9.annotations.Value;
 import com.igushkin.homeworks.lesson9.exceptions.NoValueAnnotationException;
 
+import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.igushkin.homeworks.lesson9.exceptions.TypeUnsupportedException;
 import org.slf4j.Logger;
@@ -15,12 +19,36 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Checks if the class has @Entity and @Value annotation, sets value of @Value annotation to fields.
+ * Works only with String and Integer fields.
  */
 public class AnnotationProcessor {
     final static Logger log = LoggerFactory.getLogger(AnnotationProcessor.class);
 
     private final static String STRING_DEFAULT = "default";
     private final static int INT_DEFAULT = 0;
+
+    /**
+     * Path to the file with @Value values
+     */
+    private Path fullPath;
+    /**
+     * Field. Contains path-value pairs, retrieved from the file by fullPath
+     */
+    private Map<String, String> mapPathValue;
+
+    public Path getFullPath() {
+        return fullPath;
+    }
+
+    /**
+     * Reads file by fullPath and read values further to fill in Entities fields.
+     * @param fullPath path to file with values. The lines of the file must follow the pattern path=value
+     * @throws IOException when trouble with reading the file
+     */
+    public void useValuesFromPath(Path fullPath) throws IOException {
+        this.fullPath = fullPath;
+        this.mapPathValue = getMap(fullPath);
+    }
 
     /**
      * Checks if the pojoObject has both @Entity and @Value annotations.
@@ -34,8 +62,8 @@ public class AnnotationProcessor {
         if (hasEntityAnnotation(pojoObject)) {
             Method[] declaredMethods = pojoObject.getClass().getDeclaredMethods();
             Field[] declaredFields = pojoObject.getClass().getDeclaredFields();
-            if (!hasValueAnnotation(declaredFields) || !hasValueAnnotation(declaredMethods)) {
-                log.debug("handleHuman() - no @Value annotation on fields or methods! " +
+            if (!hasValueAnnotation(declaredFields) && !hasValueAnnotation(declaredMethods)) {
+                log.debug("handlePojo() - no @Value annotation on fields or methods! " +
                         "Throwing NoValueAnnotationException");
                 throw new NoValueAnnotationException();
             } else {
@@ -112,8 +140,6 @@ public class AnnotationProcessor {
     private boolean setFromSetterAnnotation(Field field, Object pojoObject) {
         log.debug("setFromSetterAnnotation() - start to search setter to field {}", field.getName());
         log.trace("setFromSetterAnnotation() - field type is {}", field.getType());
-        log.trace("field type .equals(int) {}", field.getType().equals(Integer.class));
-        log.trace("field type .equals(String) {}", field.getType().equals(String.class));
         boolean result = false;
         try {
             String setterName = makeSetterName(field);
@@ -121,13 +147,56 @@ public class AnnotationProcessor {
             Method setterMethod = pojoObject.getClass().getDeclaredMethod(setterName, field.getType());
             Value setterAnnotation = setterMethod.getAnnotation(Value.class);
             if (Objects.nonNull(setterAnnotation)) {
-                result = trySetValue(field, pojoObject, setterAnnotation);
+                result = setFieldFromAnnotationInstance(field, pojoObject, setterAnnotation);
             }
         } catch (NoSuchMethodException e) {
             log.warn("setFromSetterAnnotation() - no annotated @Value setter found!", e);
         }
         log.trace("setFromSetterAnnotation() - success: {}", result);
         return result;
+    }
+
+    /**
+     * Trying to set the field with value or using the path of @Value instance
+     * @param field the field of the pojoObject
+     * @param pojoObject instance of a POJO class
+     * @param annotation instance of @Value annotation that contains the value or the path
+     * @return true if setting was successful
+     */
+    private boolean setFieldFromAnnotationInstance(Field field, Object pojoObject, Value annotation) {
+        if (Objects.nonNull(mapPathValue) && isPathPassed(annotation)) {
+            String pathKey = annotation.path().toLowerCase(Locale.ROOT);
+            String value = mapPathValue.get(pathKey);
+            return trySetValue(field, pojoObject, value);
+        } else {
+            String value = annotation.value();
+            return trySetValue(field, pojoObject, value);
+        }
+    }
+
+    /**
+     * Checks if the annotation has path filled
+     * @param annotation @Value annotation to check
+     * @return true if "path" field filled
+     */
+    private boolean isPathPassed (Value annotation) {
+        return annotation.path().length() > 0;
+    }
+
+    /**
+     * Creates a map and fills it with the values read from the file
+     * @param path full path to the file
+     * @return Map filled with the pairs (String, String)
+     * @throws IOException when unable to read the file
+     */
+    private Map<String, String> getMap(Path path) throws IOException {
+        Map<String, String> map = new HashMap<>();
+        List<String> lines = Files.lines(path).collect(Collectors.toList());
+        for (String line : lines) {
+            String[] keyValue = line.split("=");
+            map.put(keyValue[0], keyValue[1]);
+        }
+        return map;
     }
 
     /**
@@ -140,9 +209,9 @@ public class AnnotationProcessor {
         log.debug("setFromFieldAnnotation() - start to search @Value on field {}", field.getName());
         log.trace("setFromFieldAnnotation() - field type is {}", field.getType());
         boolean result = false;
-        Value value = field.getAnnotation(Value.class);
-        if (Objects.nonNull(value)) {
-            result = trySetValue(field, pojoObject, value);
+        Value fieldAnnotation = field.getAnnotation(Value.class);
+        if (Objects.nonNull(fieldAnnotation)) {
+            result = setFieldFromAnnotationInstance(field, pojoObject, fieldAnnotation);
         }
         log.debug("setFromFieldAnnotation() - setting success: {}, field's name: {}", result, field.getName());
         return result;
@@ -164,27 +233,26 @@ public class AnnotationProcessor {
      * Sets the field with int type by the value from its @Value annotation
      * @param field the field to set its value
      * @param pojoObject instance of a POJO class
-     * @param annotation passed fields's @Value annotation
+     * @param value passed fields's @Value annotation
      * @throws IllegalAccessException when unable to set field's value
      */
-    private void setInt(Field field, Object pojoObject, Value annotation) throws IllegalAccessException {
+    private void setInt(Field field, Object pojoObject, String value) throws IllegalAccessException {
         field.setAccessible(true);
-        log.trace("setInt() - annotation.value() = {}", annotation.value());
-        int value = Integer.parseInt(annotation.value());
-        field.set(pojoObject, value);
+        log.trace("setInt() - annotation.value() = {}", value);
+        int intValue = Integer.parseInt(value);
+        field.set(pojoObject, intValue);
     }
 
     /**
      * Sets the field with String type by the value from its @Value annotation
      * @param field the field to set its value
      * @param pojoObject instance of a POJO class
-     * @param annotation passed fields's @Value annotation
+     * @param value passed fields's @Value annotation
      * @throws IllegalAccessException when unable to set field's value
      */
-    private void setString(Field field, Object pojoObject, Value annotation) throws IllegalAccessException {
+    private void setString(Field field, Object pojoObject, String value) throws IllegalAccessException {
         field.setAccessible((true));
-        log.trace("setString() - annotation.value() = {}", annotation.value());
-        String value = annotation.value();
+        log.trace("setString() - annotation.value() = {}", value);
         field.set(pojoObject, value);
     }
 
@@ -192,17 +260,17 @@ public class AnnotationProcessor {
      * trying to set the field by value from its @Value annotation
      * @param field the field to set its value
      * @param pojoObject instance of a POJO class
-     * @param annotation the @Value annotation
+     * @param value the @Value annotation
      * @return false if setting was unsuccessful, else true
      */
-    private boolean trySetValue(Field field, Object pojoObject, Value annotation) {
+    private boolean trySetValue(Field field, Object pojoObject, String value) {
         boolean result = false;
         try {
             if (field.getType().equals(Integer.class) || field.getType().equals(int.class)) {
-                setInt(field, pojoObject, annotation);
+                setInt(field, pojoObject, value);
                 result = true;
             } else if (field.getType().equals(String.class)) {
-                setString(field, pojoObject, annotation);
+                setString(field, pojoObject, value);
                 result = true;
             }
         } catch (IllegalAccessException e) {
@@ -230,6 +298,13 @@ public class AnnotationProcessor {
         }
         log.debug("setFromDefault() - Setting value from default.");
     }
+
+    /**
+     * Sets field with, using @Value annotations
+     * @param pojoObject instance of a POJO class
+     * @param field the field to set its value
+     * @throws IllegalAccessException when unable to access the field
+     */
     private void setField(Object pojoObject, Field field) throws IllegalAccessException {
         if (setFromSetterAnnotation(field, pojoObject)) {
             log.trace("handleHuman() - setFieldFromSetter() = true, field: {}", field.getName());
