@@ -48,5 +48,14 @@ public class Main {
         for (Human human : humanList) {
             log.info("age={}, name={}", human.getAge(), human.getName());
         }
+
+        try {
+            FileUtilities.countAnnotations("epam-java-course");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("", 10);
     }
 }

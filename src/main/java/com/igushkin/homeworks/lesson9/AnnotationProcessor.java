@@ -177,7 +177,7 @@ public class AnnotationProcessor {
     }
 
     /**
-     * Trying to set the value from the field's annotation to the field
+     * Trying to set the value from the field's annotation to the field.
      *
      * @param field      the field of the pojoObject.
      * @param pojoObject instance of a POJO class.
