@@ -1,4 +1,4 @@
-package com.igushkin.homeworks;
+package com.igushkin.homeworks.lesson9;
 
 import com.igushkin.homeworks.lesson9.AnnotationProcessor;
 import com.igushkin.homeworks.lesson9.annotations.Entity;
@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests methods of {@link AnnotationProcessor} class.
