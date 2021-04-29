@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides methods to process data files
+ * Provides methods to process data files.
  */
 public class FileUtilities {
     final static Logger log = LoggerFactory.getLogger(FileUtilities.class);
@@ -21,9 +21,10 @@ public class FileUtilities {
     /**
      * Reads data file, spilt it to blocks, separated by an empty line.
      * Each block is sequence of lines with key and value separated with "=".
-     * @param fullPath the path to the data file
-     * @return The maps produced from the blocks
-     * @throws IOException when unable to read the data file
+     *
+     * @param fullPath the path to the data file.
+     * @return The maps produced from the blocks.
+     * @throws IOException when unable to read the data file.
      */
     public static List<Map<String, String>> readEntriesFromFile(Path fullPath) throws IOException {
         String delimiter = System.lineSeparator() + System.lineSeparator();
@@ -46,6 +47,6 @@ public class FileUtilities {
             }
             entryList.add(entityMap);
         }
-        return  entryList;
+        return entryList;
     }
 }
