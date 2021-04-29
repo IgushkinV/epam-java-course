@@ -1,6 +1,7 @@
 package com.igushkin.homeworks.lesson9.fileUtilities;
 
 import com.igushkin.homeworks.lesson9.annotations.Entity;
+import com.igushkin.homeworks.lesson9.annotations.Value;
 import com.igushkin.homeworks.lesson9.exceptions.WrongDataFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,13 +9,12 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Provides methods to process data files.
@@ -55,39 +55,70 @@ public class FileUtilities {
     }
 
     /**
-     * Counts the number of classes marked with @Entity annotation
+     * Counts the number of classes marked with @Entity annotation.
      *
-     * @param name
-     * @return
+     * @param directory project classes directory.
+     * @return count of classes, annotated with @Entity.
      */
-    public static int countAnnotations(String name) throws ClassNotFoundException, IOException {
-        final String projectClassesDirectory = "target\\classes";
+    public static long countAnnotations(String directory) throws NotDirectoryException {
+        if (!Files.isDirectory(Path.of(directory))) {
+            throw new NotDirectoryException("No directory passed!");
+        }
+        List<File> fileList = getFileList(directory);
+        long count = fileList.stream()
+                .map(FileUtilities::getFqnOfClass)
+                .filter(FileUtilities::isAnnotated)
+                .count();
+        return count;
+    }
+
+    /**
+     * Checks if the class has @Entity.
+     *
+     * @param fqnOfClass Fully qualified name of the class.
+     * @return true if the class has @Entity.
+     */
+    private static boolean isAnnotated(String fqnOfClass) {
+        Class<?> clazz = null;
+        try {
+            clazz = ClassLoader.getSystemClassLoader().loadClass(fqnOfClass);
+        } catch (ClassNotFoundException e) {
+            log.error("isAnnotated() - error during loading class {}", fqnOfClass);
+        }
+        Annotation annotation = clazz.getAnnotation(Entity.class);
+        return Objects.nonNull(annotation);
+    }
+
+    /**
+     * Makes fully qualified name of the class.
+     *
+     * @param file .class file
+     * @return String which presents fully qualified name of the class.
+     */
+    private static String getFqnOfClass(File file) {
+        return file.getAbsolutePath()
+                .split("classes\\\\")[1]
+                .replaceAll("\\\\", "\\.")
+                .replace(".class", "");
+    }
+
+    /**
+     * Searches for all .class files in the passed folder
+     *
+     * @param projectClassesDirectory directory with .class files.
+     * @return list of files.
+     */
+    private static List<File> getFileList(String projectClassesDirectory) {
         List<File> fileList = new ArrayList<>();
         try {
             fileList = Files.walk(Paths.get(projectClassesDirectory))
                     .filter(Files::isRegularFile)
-                    .filter(path1 -> path1.toString().endsWith(".class"))
-                    .map(path1 -> new File(path1.toString()))
+                    .filter(path -> path.toString().endsWith(".class"))
+                    .map(path -> new File(path.toString()))
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("getFileList() - error during accessing to files in the directory {} ", projectClassesDirectory);
         }
-        //Теперь создаем объект этого класса через класслоадер и проверяем наличие аннотации.
-        for (File file : fileList) {
-            String[] parts = file.getName().split("\\.");
-            String className = parts[0];
-            String extension = parts[1];
-
-            String fqnOfClass = file.getAbsolutePath().split("classes\\\\")[1]
-                    .replaceAll("\\\\", "\\.")
-                    .replace(".class", "");
-
-            Class<?> clazz = ClassLoader.getSystemClassLoader().loadClass(fqnOfClass);
-            Annotation annotation = clazz.getAnnotation(Entity.class);
-            System.out.println(Objects.nonNull(annotation) + " - " + clazz.getName());
-        }
-
-
-        return -1;
+        return fileList;
     }
 }
