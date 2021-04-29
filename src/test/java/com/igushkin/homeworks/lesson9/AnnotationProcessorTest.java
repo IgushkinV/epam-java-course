@@ -1,4 +1,4 @@
-package com.igushkin.homeworks;
+package com.igushkin.homeworks.lesson9;
 
 import com.igushkin.homeworks.lesson9.AnnotationProcessor;
 import com.igushkin.homeworks.lesson9.annotations.Entity;

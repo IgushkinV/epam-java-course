@@ -1,7 +1,6 @@
 package com.igushkin.homeworks.lesson9.fileUtilities;
 
 import com.igushkin.homeworks.lesson9.annotations.Entity;
-import com.igushkin.homeworks.lesson9.annotations.Value;
 import com.igushkin.homeworks.lesson9.exceptions.WrongDataFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
