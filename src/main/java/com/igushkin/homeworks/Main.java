@@ -53,7 +53,7 @@ public class Main {
             log.info("age={}, name={}", human.getAge(), human.getName());
         }
         log.info("Three start task solution demonstration:");
-        long count = 0;
+        int count = 0;
         try {
             count = FileUtilities.countAnnotations(DIRECTORY);
         } catch (NotDirectoryException e) {

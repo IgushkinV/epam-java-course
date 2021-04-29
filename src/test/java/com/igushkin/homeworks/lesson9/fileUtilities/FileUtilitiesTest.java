@@ -11,8 +11,8 @@ class FileUtilitiesTest {
 
     @Test
     void countAnnotationsReturnsTwo() throws NotDirectoryException {
-        long expected = 2;
-        long actual = FileUtilities.countAnnotations(Main.DIRECTORY);
+        int expected = 2;
+        int actual = FileUtilities.countAnnotations(Main.DIRECTORY);
         assertEquals(actual, expected);
     }
 
