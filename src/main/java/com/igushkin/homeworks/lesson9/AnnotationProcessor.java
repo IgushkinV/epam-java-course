@@ -4,14 +4,10 @@ import com.igushkin.homeworks.lesson9.annotations.Entity;
 import com.igushkin.homeworks.lesson9.annotations.Value;
 import com.igushkin.homeworks.lesson9.exceptions.NoValueAnnotationException;
 
-import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.igushkin.homeworks.lesson9.exceptions.TypeUnsupportedException;
 import org.slf4j.Logger;
@@ -25,29 +21,16 @@ public class AnnotationProcessor {
     final static Logger log = LoggerFactory.getLogger(AnnotationProcessor.class);
 
     private final static String STRING_DEFAULT = "default";
-    private final static int INT_DEFAULT = 0;
+    private final static int INT_DEFAULT = -1;
 
-    /**
-     * Path to the file with @Value values
-     */
-    private Path fullPath;
     /**
      * Field. Contains path-value pairs, retrieved from the file by fullPath
      */
-    private Map<String, String> mapPathValue;
+    private Map<String, String> pathValueMap;
 
-    public Path getFullPath() {
-        return fullPath;
-    }
+    public void setPathValueMap(Map<String, String> map) {
 
-    /**
-     * Reads file by fullPath and read values further to fill in Entities fields.
-     * @param fullPath path to file with values. The lines of the file must follow the pattern path=value
-     * @throws IOException when trouble with reading the file
-     */
-    public void useValuesFromPath(Path fullPath) throws IOException {
-        this.fullPath = fullPath;
-        this.mapPathValue = getMap(fullPath);
+    this.pathValueMap = map;
     }
 
     /**
@@ -164,9 +147,12 @@ public class AnnotationProcessor {
      * @return true if setting was successful
      */
     private boolean setFieldFromAnnotationInstance(Field field, Object pojoObject, Value annotation) {
-        if (Objects.nonNull(mapPathValue) && isPathPassed(annotation)) {
+        if (Objects.nonNull(pathValueMap) && isPathPassed(annotation)) {
             String pathKey = annotation.path().toLowerCase(Locale.ROOT);
-            String value = mapPathValue.get(pathKey);
+            String value = pathValueMap.get(pathKey);
+            if (Objects.isNull(value)) {
+                return false;
+            }
             return trySetValue(field, pojoObject, value);
         } else {
             String value = annotation.value();
@@ -181,22 +167,6 @@ public class AnnotationProcessor {
      */
     private boolean isPathPassed (Value annotation) {
         return annotation.path().length() > 0;
-    }
-
-    /**
-     * Creates a map and fills it with the values read from the file
-     * @param path full path to the file
-     * @return Map filled with the pairs (String, String)
-     * @throws IOException when unable to read the file
-     */
-    private Map<String, String> getMap(Path path) throws IOException {
-        Map<String, String> map = new HashMap<>();
-        List<String> lines = Files.lines(path).collect(Collectors.toList());
-        for (String line : lines) {
-            String[] keyValue = line.split("=");
-            map.put(keyValue[0], keyValue[1]);
-        }
-        return map;
     }
 
     /**
