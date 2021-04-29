@@ -60,18 +60,15 @@ public class FileUtilities {
      * @param directory project classes directory.
      * @return count of classes, annotated with @Entity.
      */
-    public static int countAnnotations(String directory) throws NotDirectoryException {
+    public static long countAnnotations(String directory) throws NotDirectoryException {
         if (!Files.isDirectory(Path.of(directory))) {
             throw new NotDirectoryException("No directory passed!");
         }
-        int count = 0;
         List<File> fileList = getFileList(directory);
-        for (File file : fileList) {
-            String fqnOfClass = getFqnOfClass(file);
-            if (isAnnotated(fqnOfClass)) {
-                count++;
-            }
-        }
+        long count = fileList.stream()
+                .map(FileUtilities::getFqnOfClass)
+                .filter(FileUtilities::isAnnotated)
+                .count();
         return count;
     }
 
