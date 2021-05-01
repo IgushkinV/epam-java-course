@@ -2,71 +2,95 @@ package igushkin.homeworks.lesson10.task2;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+/**
+ * Provides utility methods for writing objects to and reading objects from a file
+ * The object class must implement the Serializable interface.
+ *
+ * @param <T> must implement the Serializable interface.
+ */
 @Slf4j
 public class TaskUtilities<T> {
 
-    public Optional<List<T>> readObjectsFromFile(Path path) {
-        Optional<List<T>> readList = Optional.empty();
-        try {
-            Optional<T> temp = convertFromBytes(Files.readAllBytes(path));
-            if (temp.isEmpty()) {
-                log.warn("readObjectsFromFile() - No bytes received from convertFromBytes(). " +
-                        "Optional.empty() will be returned.");
-                return readList;
-            }
-            readList = Optional.of((List<T>) convertFromBytes(Files.readAllBytes(path)).get());
+    /**
+     * Writes objects from the passed list to a file using Base64 encoding.
+     * Each object will be written on a new line.
+     *
+     * @param listOfObjects The list of objects to be written to the file.
+     */
+    public void oneStreamWrite(List<T> listOfObjects, Path path) {
+        Base64.Encoder encoder = Base64.getEncoder();
+        try (FileWriter writer = new FileWriter(path.toFile())) {
+            listOfObjects.stream()
+                    .map(obj -> {
+                        log.debug("oneStreamWrite() - writing object {}", obj);
+                        byte[] bytes = null;
+                        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+                            oos.writeObject(obj);
+                            bytes = bos.toByteArray();
+                        } catch (IOException e) {
+                            log.error("oneStreamWrite() - error during converting object {} to byte[]", obj, e);
+                        }
+                        return bytes;
+                    })
+                    .map(encoder::encodeToString)
+                    .forEach(string -> {
+                        try {
+                            log.debug("oneStreamWrite() - String to write: {}", string);
+                            writer.write(string + System.lineSeparator());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
         } catch (IOException e) {
-            log.error("readObjectsFromFile() - error during reading objects from the file {}.", path.getFileName(), e);
-        }
-        return readList;
-    }
-
-    public void writeObjectsToFile(List<T> tList, Path path) {
-        try {
-            byte[] bytes = convertToBytes(tList);
-            Files.write(path, bytes);
-        } catch (IOException e) {
-            log.error("writeObjectsToFile() - error during encoding and writing to the file.");
+            log.error("oneStreamWrite() - error during using FileWriter to file {}", path.getFileName());
         }
     }
 
-    private byte[] convertToBytes(Object object) {
-        byte[] encode = null;
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ObjectOutputStream out = new ObjectOutputStream(bos)) {
-            out.writeObject(object);
-            encode = getEncode(bos.toByteArray());
-        } catch (IOException e) {
-            log.error("convertToBytes() - error during writing to ObjectOutputStream.");
-        }
-        return encode;
-    }
-
-    private byte[] getEncode(byte[] bytes) {
-        return Base64.getEncoder().encode(bytes);
-    }
-
-    private Optional<T> convertFromBytes(byte[] bytes) {
-        Optional<T> obj = Optional.empty();
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(getDecode(bytes));
-             ObjectInputStream in = new ObjectInputStream(bis)) {
-            obj = Optional.of((T) in.readObject());
-        } catch (IOException e) {
-            log.error("convertFromBytes() - error, during reading from ObjectInputStream.", e);
-        } catch (ClassNotFoundException e) {
-            log.error("convertFromBytes() - error, during reading objects with ObjectInputStream.", e);
-        }
-        return obj;
-    }
-
-    private byte[] getDecode(byte[] bytes) {
-        return Base64.getDecoder().decode(bytes);
+    /**
+     * Reads objects from a file using Base64 decoding. Each object must be written on a separate line.
+     *
+     * @param path Path to the file, which contains encoded objects.
+     * @return List of Optionals. Object in Optional may be a null.
+     * @throws IOException when unable to read lines form passed file.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Optional<T>> oneStreamRead(Path path) throws IOException {
+        Base64.Decoder decoder = Base64.getDecoder();
+        log.debug("oneStreamRead() - Lines count: {}", Files.lines(path).count());
+        return Files.lines(path)
+                .peek(line -> log.debug("oneStreamRead() - Line to parse: {}", line))
+                .map(line -> line.getBytes(StandardCharsets.UTF_8))
+                .map(decoder::decode)
+                .map(bytes -> {
+                    T obj = null;
+                    try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                         ObjectInputStream ois = new ObjectInputStream(bis)) {
+                        obj = (T) ois.readObject();
+                        log.debug("oneStreamRead() - Object from file is: {}", obj);
+                    } catch (IOException e) {
+                        log.error("oneStreamRead() - Error during reading file {}", path, e);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    return obj;
+                })
+                .map(Optional::ofNullable)
+                .peek(obj -> log.debug("oneStreamRead() - {} placed to list", obj))
+                .collect(Collectors.toList());
     }
 }

@@ -1,16 +1,16 @@
 package igushkin.homeworks;
 
-import igushkin.homeworks.lesson10.task2.MyNoNullArrayList;
-import igushkin.homeworks.lesson10.task2.TaskUtilities;
 import igushkin.homeworks.lesson10.task2.Sausage;
+import igushkin.homeworks.lesson10.task2.TaskUtilities;
 import igushkin.homeworks.lesson10.taskone.TaskOne;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Demonstrates solution of Task1 and Task2 of lesson 10 homework.
@@ -23,8 +23,58 @@ public class Main {
     public final static Path EMPTY_FILE = Path.of("src/main/resources/null.txt");
 
     public static void main(String[] args) {
+        demonstrateTaskOne();
+        demonstrateTaskTwo();
+    }
+
+    public static boolean demonstrateTaskTwo() {
+        boolean success = true;
+        log.info("*************** Task 2 demonstration (with 1 star) ***************");
+
+        Sausage sausage1 = new Sausage(); //type = null
+        Sausage sausage2 = new Sausage("B", 500, 200);
+        Sausage sausage3 = new Sausage("C", 1000, 250);
+        List<Sausage> sausageList = new ArrayList<>();
+        sausageList.add(sausage1);
+        sausageList.add(sausage2);
+        sausageList.add(sausage3);
+        sausageList.add(null);
+        TaskUtilities<Sausage> sausageUtilities = new TaskUtilities<>();
+
+        sausageUtilities.oneStreamWrite(sausageList, SAUSAGES_THERE);
+        List<Optional<Sausage>> listFromFile = null;
+        try {
+            listFromFile = sausageUtilities.oneStreamRead(SAUSAGES_THERE);
+        } catch (IOException e) {
+            success = false;
+            log.error("main() - unable to read file {}", SAUSAGES_THERE.getFileName());
+        }
+        listFromFile.stream()
+                .filter(Optional::isPresent)
+                .forEach(elem -> log.info("main() - NonNull object from the file: {}", elem.get()));
+
+        log.info("Попытаемся прочитать из пустого файла:");
+        try {
+            sausageUtilities.oneStreamRead(EMPTY_FILE);
+        } catch (IOException e) {
+            success = false;
+            log.error("main() - error during reading from the file {}", EMPTY_FILE.getFileName(), e);
+        }
+        log.info("main() - Демонстрация работы геттеров, возвращающих Optional:");
+        Sausage sausageForNull = new Sausage(); //type = null
+        //sausageForNull.setType("D"); //раскомментировать для выполнения первой ветки else.
+        if (sausageForNull.getType().isPresent()) {
+            log.info("main() - type of sausage is {}", sausageForNull.getType().get());
+        } else {
+            log.info("main() - No value in field \"type\" of {}", sausageForNull);
+        }
+        return success;
+    }
+
+    public static boolean demonstrateTaskOne() {
+        boolean success = true;
         TaskOne taskOne = new TaskOne();
-        List uuids = taskOne.generateUUID(10000);
+        List<UUID> uuids = taskOne.generateUUID(10000);
         long count = 0;
         long count2 = 0;
         try {
@@ -33,6 +83,9 @@ public class Main {
             log.info("main() - Using Streams. The number of UUIDs with sum of all digit > 100: {}.", count);
             count2 = taskOne.oldReadAndCountUUIDs(PATH);
             log.info("main() - Without Streams. The number of UUIDs with sum of all digit > 100: {}.", count2);
+            if (count != count2) {
+                success = false;
+            }
         } catch (IOException e) {
             log.error("main() - Error during reading file {}.", PATH.getFileName(), e);
         }
@@ -40,39 +93,6 @@ public class Main {
         String dateOfDoomsDay2 = taskOne.oldMakeDateOfDoomsday(count2);
         log.info("main() - Using Streams. Date of the end of the world: {}.", dateOfDoomsDay);
         log.info("main() - Without Streams. Date of the end of the world: {}.", dateOfDoomsDay2);
-
-        log.info("*************** Task 2 demonstration (with 1 star) ***************");
-        List<Sausage> sausageList = new ArrayList<>();
-        Sausage opt1 = new Sausage("A", 500, 300);
-        Sausage opt2 = new Sausage("B", 500, 200);
-        Sausage opt3 = new Sausage("C", 1000, 250);
-        sausageList.add(opt1);
-        sausageList.add(opt2);
-        sausageList.add(opt3);
-
-        TaskUtilities<Sausage> sausageUtilities = new TaskUtilities<>();
-        sausageUtilities.writeObjectsToFile(sausageList, SAUSAGES_THERE);
-        Optional<List<Sausage>> optionalFromFile = sausageUtilities.readObjectsFromFile(SAUSAGES_THERE);
-        List<Sausage> listFromFile = new ArrayList<>();
-        if (optionalFromFile.isPresent()) {
-            listFromFile = optionalFromFile.get();
-        } else {
-            log.warn("main() - No value present in passed list.");
-        }
-        for (Sausage sausage : listFromFile) {
-            log.info("main() - {}", sausage.toString());
-        }
-        List<Sausage> noNullList = new MyNoNullArrayList<>();
-        noNullList.add(null); //сообщение о том, что невозможно добавить null.
-
-        sausageUtilities.readObjectsFromFile(EMPTY_FILE);
-
-        Sausage sausageForNull = new Sausage();
-        sausageForNull.setType("D"); //закомментировать для выполнения второй ветки else.
-        if (sausageForNull.getType().isPresent()) {
-            log.info("main() - type of sausage is {}", sausageForNull.getType().get());
-        } else {
-            log.info("main() - No value in field \"type\" of {}", sausageForNull);
-        }
+        return success;
     }
 }
