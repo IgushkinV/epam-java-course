@@ -33,8 +33,7 @@ public class TaskUtilities<T> {
      */
     public void oneStreamWrite(List<T> listOfObjects, Path path) {
         Base64.Encoder encoder = Base64.getEncoder();
-        try (FileWriter writer = new FileWriter(path.toFile())) {
-            listOfObjects.stream()
+            String strToWrite = listOfObjects.stream()
                     .map(obj -> {
                         log.debug("oneStreamWrite() - writing object {}", obj);
                         byte[] bytes = null;
@@ -48,16 +47,11 @@ public class TaskUtilities<T> {
                         return bytes;
                     })
                     .map(encoder::encodeToString)
-                    .forEach(string -> {
-                        try {
-                            log.debug("oneStreamWrite() - String to write: {}", string);
-                            writer.write(string + System.lineSeparator());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                    .collect(Collectors.joining(System.lineSeparator()));
+        try {
+            Files.writeString(path, strToWrite);
         } catch (IOException e) {
-            log.error("oneStreamWrite() - error during using FileWriter to file {}", path.getFileName());
+            log.error("oneStreamWrite() - error during writing the string to the file", e);
         }
     }
 
@@ -74,7 +68,6 @@ public class TaskUtilities<T> {
         log.debug("oneStreamRead() - Lines count: {}", Files.lines(path).count());
         return Files.lines(path)
                 .peek(line -> log.debug("oneStreamRead() - Line to parse: {}", line))
-                .map(line -> line.getBytes(StandardCharsets.UTF_8))
                 .map(decoder::decode)
                 .map(bytes -> {
                     T obj = null;

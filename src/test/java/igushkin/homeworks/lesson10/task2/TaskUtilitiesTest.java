@@ -1,7 +1,9 @@
 package igushkin.homeworks.lesson10.task2;
 
 import igushkin.homeworks.Main;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -11,18 +13,20 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests TaskUtilities class methods.
  */
+@Slf4j
 class TaskUtilitiesTest {
 
-    private static List<Sausage> sausageList = new ArrayList<>();
-    private static TaskUtilities<Sausage> taskUtilities;
+    private List<Sausage> sausageList = new ArrayList<>();
+    private TaskUtilities<Sausage> taskUtilities;
 
-    @BeforeAll
-    public static void prepare() {
-        taskUtilities = new TaskUtilities<>();
+    @BeforeEach
+    public void setUp() {
+        this.taskUtilities = new TaskUtilities<>();
         Sausage s1 = new Sausage("S1", 10, 10);
         Sausage s2 = new Sausage("S2", 20, 20);
         sausageList.add(s1);
@@ -31,11 +35,16 @@ class TaskUtilitiesTest {
     }
 
     @Test
-    public void readObjectsFromFileReadsTheeObjects() throws IOException {
+    public void readObjectsFromFileReadsTheeObjects() {
         int expected = 3;
         taskUtilities.oneStreamWrite(sausageList, Main.SAUSAGES_THERE);
 
-        List<Optional<Sausage>> listFromFile = taskUtilities.oneStreamRead(Main.SAUSAGES_THERE);
+        List<Optional<Sausage>> listFromFile = null;
+        try {
+            listFromFile = taskUtilities.oneStreamRead(Main.SAUSAGES_THERE);
+        } catch (IOException e) {
+            fail("Error during reading the file.", e);
+        }
         int actual = listFromFile.size();
 
         assertEquals(expected, actual);
@@ -43,11 +52,16 @@ class TaskUtilitiesTest {
     }
 
     @Test
-    public void writeObjectsToFileWritesObjectInThreeLines() throws IOException {
+    public void writeObjectsToFileWritesObjectInThreeLines() {
         long expected = 3;
 
         taskUtilities.oneStreamWrite(sausageList, Main.SAUSAGES_THERE);
-        long actual = Files.lines(Main.SAUSAGES_THERE).count();
+        long actual = 0;
+        try {
+            actual = Files.lines(Main.SAUSAGES_THERE).count();
+        } catch (IOException e) {
+            fail("Error during writing to the file.", e);
+        }
 
         assertEquals(expected, actual);
 

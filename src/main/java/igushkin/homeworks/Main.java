@@ -2,6 +2,7 @@ package igushkin.homeworks;
 
 import igushkin.homeworks.lesson10.task2.Sausage;
 import igushkin.homeworks.lesson10.task2.TaskUtilities;
+import igushkin.homeworks.lesson10.task3.FileSystemObject;
 import igushkin.homeworks.lesson10.taskone.TaskOne;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +26,14 @@ public class Main {
     public static void main(String[] args) {
         demonstrateTaskOne();
         demonstrateTaskTwo();
+        demonstrateTaskThree();
+    }
+
+    //пока только составляет объектное представление, вывод еще не реализован.
+    public static void demonstrateTaskThree() {
+        FileSystemObject fileSystemObject = new FileSystemObject(Path.of("src/"));
+        FileSystemObject.recurse(fileSystemObject);
+        log.debug("main() - {}", fileSystemObject.getChildren().toString());
     }
 
     public static boolean demonstrateTaskTwo() {
