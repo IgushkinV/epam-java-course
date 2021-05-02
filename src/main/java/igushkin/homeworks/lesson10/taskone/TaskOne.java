@@ -2,7 +2,11 @@ package igushkin.homeworks.lesson10.taskone;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
@@ -32,7 +36,7 @@ public class TaskOne {
     }
 
     /**
-     * generates UUIDs and fills List<UUID> with them.
+     * Generates UUIDs and fills List<UUID> with them.
      *
      * @param number how many UUID's need to generate.
      * @return List<UUID>
@@ -65,7 +69,6 @@ public class TaskOne {
      *
      * @param list that contains UUID to write to the file.
      * @param path contains path to the file.
-     * @throws IOException when unable to write to the file.
      */
     public void oldWriteListToFile(List<UUID> list, Path path) {
         log.info("oldWriteListToFile() - start of writing UUIDs to file, using Java7");
@@ -97,7 +100,7 @@ public class TaskOne {
                     .mapToInt((line) -> line.chars()
                             .filter(Character::isDigit)
                             .mapToObj(Character::getNumericValue)
-                            .reduce((n1, n2) -> n1 + n2).get())
+                            .reduce(Integer::sum).get())
                     .filter(n -> n > 100)
                     .count();
         } catch (IOException e) {
@@ -111,7 +114,6 @@ public class TaskOne {
      *
      * @param path to the file, that contains UUIDs.
      * @return long number of UUIDs where the sum of digits is grater than 100.
-     * @throws IOException when unable to read the file.
      */
     public long oldReadAndCountUUIDs(Path path) {
         log.info("oldReadAndCountUUIDs() - start to reading UUIDs from file and count, how many of them has " +
@@ -160,8 +162,8 @@ public class TaskOne {
      * Calculates the date of the end of the world.
      *
      * @param number The number used to calculate the date of the end of the world:
-     * the first 2 digits of the number are used to calculate the month,
-     * the second 2 digits are used to calculate the day of the end of the world.
+     *               the first 2 digits of the number are used to calculate the month,
+     *               the second 2 digits are used to calculate the day of the end of the world.
      * @return String, where the date of the end of the world presented in ISO date and time format.
      **/
 

@@ -35,7 +35,7 @@ class TaskOneTest {
         int expected = 10;
         List<UUID> list;
 
-        list = taskOne.oldGenerateUUID(10);
+        list = taskOne.generateUUID(10);
         int actual = list.size();
 
         assertEquals(expected, actual);
