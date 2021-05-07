@@ -19,8 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Chat {
 
     public static final int MAX_CAPACITY = 25;
-    public static final int WRITERS_COUNT = 10;
-    public static final int READERS_COUNT = 5;
+    public static final int WRITERS_COUNT = 20;
+    public static final int READERS_COUNT = 10;
     public static final int UPDATERS_COUNT = 5;
 
     private ConcurrentHashMap<Integer, String> messages = new ConcurrentHashMap<>();

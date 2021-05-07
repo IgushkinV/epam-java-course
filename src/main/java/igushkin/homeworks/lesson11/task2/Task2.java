@@ -2,6 +2,11 @@ package igushkin.homeworks.lesson11.task2;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Demonstrates resolving deadlock and race condition problems.
+ * Deadlock is solved by adding an object that serves to synchronize.
+ * Race condition is solved by using a local copy of the variable.
+ */
 @Slf4j
 public class Task2 {
 

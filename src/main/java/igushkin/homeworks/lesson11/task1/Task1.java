@@ -2,6 +2,9 @@ package igushkin.homeworks.lesson11.task1;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Demonstrates deadlock and race condition problems.
+ */
 @Slf4j
 public class Task1 {
 
@@ -71,9 +74,9 @@ public class Task1 {
         num = 0;
         Thread incrementThread = new Thread(() -> {
             while (num < 20) {
-                log.info("До увеличения num = {}", num);
+                log.info("demonstrateRaceCondition() - До увеличения num = {}", num);
                 num++;
-                log.info("Произошло увеличение num на 1, новое значение: {}", num);
+                log.info("demonstrateRaceCondition() - Произошло увеличение num на 1, новое значение: {}", num);
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -84,10 +87,10 @@ public class Task1 {
 
         Thread printEvenNumThread = new Thread(() -> {
             while (num < 20) {
-                log.info("Проверка числа на четность, num = {}", num);
+                log.info("demonstrateRaceCondition() - Проверка числа на четность, num = {}", num);
                 if (num % 2 == 0) {
-                    log.info("Проверка четности прошла успешно.");
-                    log.info("Четное число num: {}", num);
+                    log.info("demonstrateRaceCondition() - Проверка четности прошла успешно.");
+                    log.info("demonstrateRaceCondition() - Четное число num: {}", num);
                 }
                 try {
                     Thread.sleep(10);
