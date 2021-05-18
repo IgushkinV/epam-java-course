@@ -1,18 +1,18 @@
 select * from products
-where title between 'ACE A' and 'ACF';
+where title between 'ACE' and 'ACF';
 
-select * from products 
+select * from products
 where price = 9.99 and category = 8
 order by category, price;
 
 select * from products
-where category = 8 or category = 15;
+where category in (8, 15);
 
 select * from products
 where price between 10 and 20;
 
 select * from orders
-where orderdate between '2004-01-05' and '2004-02-05';
+where orderdate between to_date('2004-01-05', 'yyyy-mm-dd') and to_date('2004-02-05', 'yyyy-mm-dd');
 
 select customerid, count(customerid)
 from orders
