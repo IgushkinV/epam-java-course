@@ -1,4 +1,5 @@
-select title from products;
+select * from products
+where title between 'ACE A' and 'ACF';
 
 select * from products 
 where price = 9.99 and category = 8
