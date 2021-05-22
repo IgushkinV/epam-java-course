@@ -12,7 +12,8 @@
 
             <column name="CustomerId" type="int">
                 <constraints nullable="false"
-                             foreignKeyName="fk_order_customer" references="igushkin.Customer(CustomerId)"/>
+                             foreignKeyName="fk_order_customer"
+                             referencedTableName="Customer" referencedColumnNames="CustomerId"/>
             </column>
 
             <column name="OrderDate" type="timestamp">

@@ -6,12 +6,14 @@
         <createTable tableName="OrderProduct" schemaName="igushkin">
             <column name="OrderId" type="int">
                 <constraints primaryKey="true" nullable="false"
-                             foreignKeyName="fk_order_product__order" references="Order(OrderId)"/>
+                             foreignKeyName="fk_order_product__order"
+                             referencedTableName="Order" referencedColumnNames="OrderId"/>
             </column>
 
             <column name="ProductId" type="int">
                 <constraints primaryKey="true" nullable="false"
-                             foreignKeyName="fk_order_product__product" references="Product(ProductId)"/>
+                             foreignKeyName="fk_order_product__product"
+                             referencedTableName="Product" referencedColumnNames="ProductId"/>
             </column>
         </createTable>
     </changeSet>

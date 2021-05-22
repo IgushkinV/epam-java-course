@@ -13,8 +13,8 @@
             </column>
 
             <column name="SupplierId" type="int">
-                <constraints foreignKeyName="fk_product_supplier" references="Supplier(SupplierId)"
-                             nullable="false"/>
+                <constraints foreignKeyName="fk_product_supplier" nullable="false"
+                             referencedTableName="Supplier" referencedColumnNames="SupplierId"/>
             </column>
 
             <column name="UnitPrice" type="decimal(12,2)"/>
