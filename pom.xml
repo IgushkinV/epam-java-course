@@ -25,6 +25,8 @@
         <jacoco-maven-plugin.minimum>0.7</jacoco-maven-plugin.minimum>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
 
         <lombok.version>1.18.12</lombok.version>
         <logback-classic.version>1.2.3</logback-classic.version>
@@ -32,6 +34,8 @@
         <mockito-core.version>2.23.0</mockito-core.version>
         <mockito-junit-jupiter.version>2.23.0</mockito-junit-jupiter.version>
 
+        <liquibase-core.version>4.3.5</liquibase-core.version>
+        <postgresql.version>42.2.20</postgresql.version>
     </properties>
 
     <build>
@@ -39,6 +43,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${maven-compiler-plugin.source}</source>
                     <target>${maven-compiler-plugin.target}</target>
@@ -48,6 +53,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
+                <version>${maven-site-plugin.version}</version>
                 <configuration>
                     <outputEncoding>UTF-8</outputEncoding>
                 </configuration>
@@ -153,6 +159,19 @@
                 <version>${mockito-junit-jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

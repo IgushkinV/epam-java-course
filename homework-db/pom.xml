@@ -39,6 +39,55 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+    </dependencies>
+    <properties>
+        <liquibase.host>localhost</liquibase.host>
+        <liquibase.port>5432</liquibase.port>
+        <liquibase.db>epamcourses</liquibase.db>
+        <liquibase.schema>igushkin</liquibase.schema>
+        <liquibase-maven-plugin.username>usr</liquibase-maven-plugin.username>
+        <liquibase-maven-plugin.password>pass</liquibase-maven-plugin.password>
+
+        <liquibase-maven-plugin.changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml
+        </liquibase-maven-plugin.changeLogFile>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.3.5</version>
+                <configuration>
+                    <changeLogFile>${liquibase-maven-plugin.changeLogFile}</changeLogFile>
+                    <driver>org.postgresql.Driver</driver>
+                    <url>
+                        jdbc:postgresql://${liquibase.host}:${liquibase.port}/${liquibase.db}?currentSchema=${liquibase.schema}
+                    </url>
+                    <username>${liquibase-maven-plugin.username}</username>
+                    <password>${liquibase-maven-plugin.password}</password>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -1,0 +1,29 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="2021-05-22-table-product-creation" author="Vladimir_Igushkin">
+        <createTable tableName="Product" schemaName="igushkin">
+            <column name = "ProductId" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="ProductName" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="SupplierId" type="int">
+                <constraints foreignKeyName="fk_product_supplier" references="Supplier(SupplierId)"
+                             nullable="false"/>
+            </column>
+
+            <column name="UnitPrice" type="decimal(12,2)"/>
+
+            <column name="IsDiscontinued" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
