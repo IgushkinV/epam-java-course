@@ -1,6 +1,8 @@
 package com.epam.igushkin.homework.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,7 +10,6 @@ import java.util.List;
 
 @Data
 @Entity
-@Table
 public class Customer {
 
     @Id
@@ -19,9 +20,11 @@ public class Customer {
     @Column(name = "customer_name")
     private String customerName;
 
-    @Column(name = "phone")
+    @Column
     private String phone;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
 }

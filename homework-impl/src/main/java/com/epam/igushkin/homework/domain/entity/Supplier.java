@@ -1,8 +1,11 @@
 package com.epam.igushkin.homework.domain.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -17,6 +20,10 @@ public class Supplier {
     @Column(name = "company_name")
     private String companyName;
 
-    @Column(name = "phone")
+    @Column
     private String phone;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
+    @EqualsAndHashCode.Exclude
+    Set<Product> products = new HashSet<>();
 }

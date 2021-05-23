@@ -11,6 +11,17 @@
 
     <artifactId>homework-db</artifactId>
 
+    <properties>
+        <liquibase.host>localhost</liquibase.host>
+        <liquibase.port>5432</liquibase.port>
+        <liquibase.db>epamcourses</liquibase.db>
+        <liquibase.schema>igushkin</liquibase.schema>
+        <liquibase-maven-plugin.username>usr</liquibase-maven-plugin.username>
+        <liquibase-maven-plugin.password>pass</liquibase-maven-plugin.password>
+        <liquibase-maven-plugin.changeLogFile>src/main/resources/db/database_epam-java-course_changelog.xml
+        </liquibase-maven-plugin.changeLogFile>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -49,19 +60,7 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
     </dependencies>
-    <properties>
-        <liquibase.host>localhost</liquibase.host>
-        <liquibase.port>5432</liquibase.port>
-        <liquibase.db>epamcourses</liquibase.db>
-        <liquibase.schema>igushkin</liquibase.schema>
-        <liquibase-maven-plugin.username>usr</liquibase-maven-plugin.username>
-        <liquibase-maven-plugin.password>pass</liquibase-maven-plugin.password>
-
-        <liquibase-maven-plugin.changeLogFile>src/main/resources/db/database_epam-java-course_changelog.xml
-        </liquibase-maven-plugin.changeLogFile>
-    </properties>
 
     <build>
         <plugins>

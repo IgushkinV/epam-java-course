@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table
 public class Product {
 
     @Id
@@ -19,13 +18,15 @@ public class Product {
     @Column(name = "product_name")
     private String productName;
 
-    @Column(name = "supplier_Id")
-    private int supplierId;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
 
-    @Column(name = "Is_discontinued")
+    @Column(name = "is_discontinued")
     private boolean isDiscontinued;
 
     @ManyToMany(mappedBy = "products")

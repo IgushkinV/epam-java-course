@@ -2,6 +2,7 @@ package com.epam.igushkin.homework.domain.entity;
 
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table
+@Table(name = "[order]")
 public class Order {
 
     @Id
@@ -23,9 +24,10 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @EqualsAndHashCode.Exclude
     private Customer customer;
 
-    @Column(name = "order_date")
+    @Column (name = "order_date")
     private LocalDateTime orderDate;
 
     @Column(name = "total_amount")
