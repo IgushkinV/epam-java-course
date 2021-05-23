@@ -1,0 +1,83 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="2021-05-20-create-table-customer" author="Vladimir_Igushkin">
+        <createTable tableName="customer" schemaName="igushkin">
+            <column name="customer_id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="customer_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-02-22-create-table-supplier" author="Vladimir_Igushkin">
+        <createTable tableName="supplier" schemaName="igushkin">
+            <column name="supplier_id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="company_name" type="varchar(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-05-22-create-table-order" author="Vladimir_Igushkin">
+        <createTable tableName="order" schemaName="igushkin">
+            <column name="order_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_number" type="varchar(10)"/>
+            <column name="customer_id" type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_order_customer"
+                             referencedTableName="customer" referencedColumnNames="customer_id"/>
+            </column>
+            <column name="order_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_amount" type="decimal(12,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-05-22-create-table-product" author="Vladimir_Igushkin">
+        <createTable tableName="product" schemaName="igushkin">
+            <column name="product_id" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="product_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="supplier_id" type="int">
+                <constraints foreignKeyName="fk_product_supplier" nullable="false"
+                             referencedTableName="supplier" referencedColumnNames="supplier_id"/>
+            </column>
+            <column name="unit_price" type="decimal(12,2)"/>
+            <column name="is_discontinued" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-05-22-create-table-order_product" author="Vladimir_Igushkin">
+        <createTable tableName="order_product" schemaName="igushkin">
+            <column name="order_id" type="int">
+                <constraints primaryKey="true" nullable="false"
+                             foreignKeyName="fk_order_product__order"
+                             referencedTableName="order" referencedColumnNames="order_id"/>
+            </column>
+            <column name="product_id" type="int">
+                <constraints primaryKey="true" nullable="false"
+                             foreignKeyName="fk_order_product__product"
+                             referencedTableName="product" referencedColumnNames="product_id"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
