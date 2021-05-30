@@ -47,7 +47,7 @@ public class Main {
         var totalAmount = BigDecimal.valueOf(1000);
         var order = orderUtils.create(orderNumber, customerId, orderDate, totalAmount, List.of(2));
         log.info("New Order was created and added: {}", order);
-        orderUtils.update(1);
+        orderUtils.update(1, 3,"123-123", BigDecimal.valueOf(100500));
         orderUtils.delete(3);
     }
 
@@ -59,7 +59,7 @@ public class Main {
         log.info("demonstrationSupplierUtils() - new supplier was created: {}", newSupplier);
         var tempSupplier = supplierUtils.create(companyName, phone);
         log.info("demonstrationSupplierUtils() - updating of tempSupplier: {}",
-                supplierUtils.update(tempSupplier.getSupplierId()));
+                supplierUtils.update(4, "Upd-name", "upd+777894656"));
         log.info("demonstrationSupplierUtils() - deleting of tempSupplier: {}",
                 supplierUtils.delete(tempSupplier.getSupplierId()));
     }
