@@ -1,6 +1,7 @@
 package com.epam.igushkin.homework.domain.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -30,5 +31,6 @@ public class Product {
     private boolean isDiscontinued;
 
     @ManyToMany(mappedBy = "products")
+    @ToString.Exclude
     private Set<Order> orders;
 }
