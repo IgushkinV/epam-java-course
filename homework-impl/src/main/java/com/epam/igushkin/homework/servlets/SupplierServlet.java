@@ -5,11 +5,12 @@ import com.epam.igushkin.homework.utils.SupplierUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 @Slf4j
 public class SupplierServlet extends HttpServlet {
@@ -19,23 +20,22 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = requestToJSON(request);
-        } catch (IOException e) {
-            log.error("doGet() - Ошибка при парсинге JSON запроса.", e);
-        }
-        if (jsonObject.has("id")) {
-            var id = jsonObject.getInt("id");
-            var supplierOpt = supplierUtils.read(id);
-            if (supplierOpt.isPresent()) {
-                response.getWriter().println(supplierOpt.get());
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else
-                response.getWriter().println("Запись не найдена.");
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        Supplier supplier = null;
+        if (request.getParameterMap().size() == 0) {
+            try {
+                response.getWriter().println(supplierUtils.readAll());
+                return;
+            } catch (IOException e) {
+                log.error("doGet() - ошибка при попытке считать все записи", e);
+            }
         } else {
-            response.getWriter().println(supplierUtils.readAll());
+            int id = Integer.parseInt(request.getParameter("id"));
+            supplier = supplierUtils.read(id).get();
+        }
+        try {
+            response.getWriter().println(supplier);
+        } catch (IOException e) {
+            log.error("doGet() - ошибка при попытке считать запись", e);
         }
     }
 
@@ -53,39 +53,25 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         setContentTypeAndEncoding(response);
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = requestToJSON(request);
-        } catch (IOException e) {
-            log.error("doPut() - Ошибка при парсинге JSON запроса.", e);
-        }
-        var id = jsonObject.getInt("id");
-        var success = supplierUtils.update(id);
-        if (success) {
-            response.getWriter().println("The update was successful.");
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-        }
+        var jsonObject = requestToJSON(request);
+        var id = Integer.parseInt(request.getParameter("id"));
+        var companyName = jsonObject.getString("company_name");
+        var phone = jsonObject.getString("phone");
+        supplierUtils.update(id, companyName, phone);
+        response.getWriter().println(supplierUtils.read(id).get());
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         setContentTypeAndEncoding(response);
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = requestToJSON(request);
-        } catch (IOException e) {
-            log.error("doDelete() - Ошибка при парсинге JSON запроса.", e);
+        var id = Integer.parseInt(request.getParameter("id"));
+        if (supplierUtils.read(id).isEmpty()) {
+            response.getWriter().println("Попытка удалить несуществующую запись.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
-        var id = jsonObject.getInt("id");
-        var success = supplierUtils.delete(id);
-        if (success) {
-            response.getWriter().println("The delete was successful.");
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-        }
+        supplierUtils.delete(id);
+        response.getWriter().println("Supplier № " + id + " удалён.");
     }
 
     private void setContentTypeAndEncoding(HttpServletResponse response) {

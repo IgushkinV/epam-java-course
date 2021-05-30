@@ -3,17 +3,14 @@ package com.epam.igushkin.homework.servlets;
 import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.utils.CustomerUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.json.HTTP;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 
 @Slf4j

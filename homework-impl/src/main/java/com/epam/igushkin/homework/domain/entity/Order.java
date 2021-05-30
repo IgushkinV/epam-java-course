@@ -22,7 +22,7 @@ public class Order {
     @Column(name = "order_number")
     private String orderNumber;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     @EqualsAndHashCode.Exclude
     private Customer customer;
@@ -33,7 +33,7 @@ public class Order {
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
-    @ManyToMany
+    @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(
             name = "order_product",
             joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "order_id"),

@@ -67,7 +67,7 @@ public class SupplierUtils {
         return resultList;
     }
 
-    public boolean update(int id) {
+    public boolean update(int id, String supplierName, String phone) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();
@@ -75,7 +75,8 @@ public class SupplierUtils {
             transaction.begin();
             var supplier = entityManager.find(Supplier.class, id);
             if (Objects.nonNull(supplier)) {
-                supplier.setCompanyName(" - Updated");
+                supplier.setCompanyName(supplierName);
+                supplier.setPhone(phone);
                 success = true;
                 log.info("update() - Изменение прошло успешно.");
             } else {

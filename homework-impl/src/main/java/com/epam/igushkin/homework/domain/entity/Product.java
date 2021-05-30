@@ -19,8 +19,7 @@ public class Product {
     @Column(name = "product_name")
     private String productName;
 
-
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
@@ -30,7 +29,7 @@ public class Product {
     @Column(name = "is_discontinued")
     private boolean isDiscontinued;
 
-    @ManyToMany(mappedBy = "products")
+    @ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
     @ToString.Exclude
     private Set<Order> orders;
 }

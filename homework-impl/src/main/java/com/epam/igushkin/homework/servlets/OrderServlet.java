@@ -1,16 +1,14 @@
 package com.epam.igushkin.homework.servlets;
 
-import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.domain.entity.Order;
-import com.epam.igushkin.homework.domain.entity.Product;
 import com.epam.igushkin.homework.utils.CustomerUtils;
 import com.epam.igushkin.homework.utils.OrderUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -24,28 +22,21 @@ public class OrderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
-        Order order = null;
-        if (request.getParameterMap().size() == 0) {
-            try {
-                response.getWriter().println(orderUtils.readAll());
-                return;
-            } catch (IOException e) {
-                log.error("doGet() - ошибка при попытке считать все записи", e);
-            }
-        } else {
-            int id = Integer.parseInt(request.getParameter("id"));
-            order = orderUtils.read(id).get();
+        var map = request.getParameterMap();
+        if (map.containsKey("customerId")) {
+            var paramCustomer = Integer.parseInt(request.getParameter("customerId"));
+            response.getWriter().println(new CustomerUtils().read(paramCustomer).get().getOrders());
         }
-        try {
-            response.getWriter().println(order);
-        } catch (IOException e) {
-            log.error("doGet() - ошибка при попытке считать запись", e);
+        if (map.containsKey("id")) {
+            var paramId = Integer.parseInt(request.getParameter("id"));
+            response.getWriter().println(orderUtils.read(paramId).get());
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
+        requestToJSON(request);
         var jsonObject = requestToJSON(request);
         var customerId = jsonObject.getInt("customer_id");
         var orderDate =  LocalDateTime.parse(jsonObject.getString("order_date"));
@@ -67,14 +58,18 @@ public class OrderServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
+        requestToJSON(request);
         JSONObject jsonObject = null;
         try {
             jsonObject = requestToJSON(request);
         } catch (IOException e) {
             log.error("doPut() - Ошибка при парсинге JSON запроса.", e);
         }
-        var id = jsonObject.getInt("id");
-        var success = orderUtils.update(id);
+        var id = Integer.parseInt(request.getParameter("id"));
+        var orderNumber = jsonObject.getString("order_number");
+        var customerIdd = jsonObject.getInt("customer_id");
+        var totalAmount = jsonObject.getBigDecimal("total_amount");
+        var success = orderUtils.update(id, customerIdd, orderNumber, totalAmount);
         if (success) {
             response.getWriter().println("The update was successful.");
             response.setStatus(HttpServletResponse.SC_OK);
@@ -87,21 +82,14 @@ public class OrderServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = requestToJSON(request);
-        } catch (IOException e) {
-            log.error("doDelete() - Ошибка при парсинге JSON запроса.", e);
+        var id = Integer.parseInt(request.getParameter("id"));
+        if (orderUtils.read(id).isEmpty()) {
+            response.getWriter().println("Попытка удалить несуществующую запись.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
-        var id = jsonObject.getInt("id");
-        var success = orderUtils.delete(id);
-        if (success) {
-            response.getWriter().println("The delete was successful.");
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            response.getWriter().println("The delete was unsuccessful.");
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-        }
+        orderUtils.delete(id);
+        response.getWriter().println("Order № " + id + " удалён.");
     }
 
     private void setContentTypeAndEncoding(HttpServletResponse response) {
@@ -112,7 +100,7 @@ public class OrderServlet extends HttpServlet {
     private JSONObject requestToJSON(HttpServletRequest request) throws IOException {
         var inputStream = request.getInputStream();
         var strRequest = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        if (strRequest == "") {
+        if (strRequest.equals("")) {
             return null;
         }
         return new JSONObject(strRequest);

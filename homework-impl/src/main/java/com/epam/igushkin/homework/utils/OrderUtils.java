@@ -29,14 +29,19 @@ public class OrderUtils {
         order.setOrderDate(orderDate);
         order.setTotalAmount(totalAmount);
         Set<Product> productSet = new HashSet<>();
+        var productUtils = new ProductUtils();
         for (int num : productIds) {
-            productSet.add(new ProductUtils().read(num).get());
+            productSet.add(productUtils.read(num).get());
         }
         order.setProducts(productSet);
+        var ordersOfCustomer = customerMadeOrder.getOrders();
+        ordersOfCustomer.add(order);
+        customerMadeOrder.setOrders(ordersOfCustomer);
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
             entityManager.persist(order);
+            entityManager.persist(customerMadeOrder);
             transaction.commit();
             log.info("create() - Запись в БД объекта {}", order);
         } catch (RuntimeException e) {
@@ -77,7 +82,7 @@ public class OrderUtils {
         return resultList;
     }
 
-    public boolean update (int id) {
+    public boolean update (int id, int customerId, String orderNumber, BigDecimal totalAmount) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();
@@ -86,6 +91,9 @@ public class OrderUtils {
             var order = entityManager.find(Order.class, id);
             if (Objects.nonNull(order)) {
                 order.setOrderDate(LocalDateTime.of(3000, 1, 1, 0, 0, 0));
+                order.setCustomer(new CustomerUtils().read(customerId).get());
+                order.setTotalAmount(totalAmount);
+                order.setOrderNumber(orderNumber);
                 success = true;
                 log.info("update() - Изменение прошло успешно.");
             } else {
