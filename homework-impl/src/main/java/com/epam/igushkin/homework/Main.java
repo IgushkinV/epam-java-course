@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -25,11 +26,10 @@ public class Main {
     public static void demonstrationCustomerUtils() {
         CustomerUtils customerUtils = new CustomerUtils();
         log.info("demonstrationCustomerUtils() - 5th line customer: {}", customerUtils.read(5).get());
-        Customer customerToAdd = new Customer();
-        customerToAdd.setCustomerName("Additional");
-        customerToAdd.setPhone("+777777777");
-        customerUtils.create(customerToAdd);
-        customerUtils.update(1);
+        var customerName = "Additional";
+        var customerPhone = "+777777777";
+        customerUtils.create(customerName, customerPhone);
+        customerUtils.update(1, "Updated-v3", "upd+33333");
         customerUtils.delete(3);
     }
 
@@ -41,37 +41,37 @@ public class Main {
         } else {
             log.info("demonstrationOrderUtils() - No order with id = 5");
         }
-        Order order = new Order();
-        order.setOrderNumber("Add№");
-        order.setOrderDate(LocalDateTime.now());
-        CustomerUtils tempCustomerUtil = new CustomerUtils();
-        Customer tempCustomer = tempCustomerUtil.read(1).get();
-        tempCustomerUtil.entityManagerClose();
-        order.setCustomer(tempCustomer);
-        order.setTotalAmount(BigDecimal.valueOf(1000));
-        orderUtils.create(order);
-        orderUtils.update(1);
+        var orderNumber = "Add№";
+        var customerId = 1;
+        var orderDate = LocalDateTime.now();
+        var totalAmount = BigDecimal.valueOf(1000);
+        var order = orderUtils.create(orderNumber, customerId, orderDate, totalAmount, List.of(2));
+        log.info("New Order was created and added: {}", order);
+        orderUtils.update(1, 3,"123-123", BigDecimal.valueOf(100500));
         orderUtils.delete(3);
     }
 
     public static void demonstrationSupplierUtils() {
-        SupplierUtils supplierUtils = new SupplierUtils();
-        Supplier supplier = new Supplier();
-        supplier.setCompanyName("EPAM");
-        supplierUtils.create(supplier);
-        supplierUtils.update(10);
-        supplierUtils.delete(1);
-        supplierUtils.entityManagerClose();
+        var supplierUtils = new SupplierUtils();
+        var companyName = "EPAM";
+        var phone = "+9999999990";
+        var newSupplier = supplierUtils.create(companyName, phone);
+        log.info("demonstrationSupplierUtils() - new supplier was created: {}", newSupplier);
+        var tempSupplier = supplierUtils.create(companyName, phone);
+        log.info("demonstrationSupplierUtils() - updating of tempSupplier: {}",
+                supplierUtils.update(4, "Upd-name", "upd+777894656"));
+        log.info("demonstrationSupplierUtils() - deleting of tempSupplier: {}",
+                supplierUtils.delete(tempSupplier.getSupplierId()));
     }
 
     public static void demonstrateProductUtils() {
-        ProductUtils productUtils = new ProductUtils();
-        Product product = new Product();
-        product.setProductName("IT secret system");
-        SupplierUtils tempUtils = new SupplierUtils();
-        Supplier tempSupplier = tempUtils.read(7).get();
-        product.setSupplier(tempSupplier);
-        product.setDiscontinued(true);
-        productUtils.create(product);
+        var productUtils = new ProductUtils();
+        var productName = "IT secret system";
+        var supplierId = 7;
+        var unitPrice = BigDecimal.valueOf(150);
+        productUtils.create(productName, supplierId, unitPrice, false);
+        log.info("demonstrateProductUtils() - Read from table Product: {}", productUtils.read(3).get());
+        productUtils.update(3, "Upd: Milk", 1, BigDecimal.valueOf(50), false);
+        log.info("demonstrateProductUtils() - Delete product 3: {}", productUtils.delete(3));
     }
 }

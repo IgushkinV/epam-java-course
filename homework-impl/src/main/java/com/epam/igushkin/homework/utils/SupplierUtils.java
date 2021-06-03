@@ -1,70 +1,118 @@
 package com.epam.igushkin.homework.utils;
 
+import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Supplier;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 public class SupplierUtils {
 
-    private final EntityManager entityManager;
+    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManager");
 
-    public SupplierUtils() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManager");
-        entityManager = emf.createEntityManager();
-    }
-
-    public void entityManagerClose() {
-        entityManager.close();
-    }
-
-    public void create(Supplier supplier) {
-        log.info("create() - Запись в БД объекта {}", supplier);
-        entityManager.getTransaction().begin();
-        entityManager.persist(supplier);
-        entityManager.getTransaction().commit();
+    public Supplier create(String companyName, String phone) {
+        var entityManager = emf.createEntityManager();
+        var transaction = entityManager.getTransaction();
+        var supplier = new Supplier();
+        try {
+            transaction.begin();
+            supplier.setCompanyName(companyName);
+            if (Objects.nonNull(phone)) {
+                supplier.setPhone(phone);
+            }
+            entityManager.persist(supplier);
+            transaction.commit();
+            log.info("create() - Запись в БД объекта {}", supplier);
+        } catch (RuntimeException e) {
+            log.error("create() - Запись завершилась неудачно.", e);
+            transaction.rollback();
+        } finally {
+            entityManager.close();
+        }
+        return supplier;
     }
 
     public Optional<Supplier> read(int id) {
-        entityManager.getTransaction().begin();
-        Supplier supplier = entityManager.find(Supplier.class, id);
-        entityManager.getTransaction().commit();
-        log.info("read() - Считано из БД: {}", supplier);
+        var entityManager = emf.createEntityManager();
+        var transaction = entityManager.getTransaction();
+        Supplier supplier = null;
+        try {
+            transaction.begin();
+            supplier = entityManager.find(Supplier.class, id);
+            log.info("read() - Считано из БД: {}", supplier);
+            transaction.commit();
+        } catch (RuntimeException e) {
+            log.error("read() - Ошибка при получении объекта из БД", e);
+        } finally {
+            entityManager.close();
+        }
         return Optional.ofNullable(supplier);
     }
 
-    public boolean update(int id) {
-        boolean success = false;
-        entityManager.getTransaction().begin();
-        Supplier supplier = entityManager.find(Supplier.class, id);
-        if (Objects.nonNull(supplier)) {
-            supplier.setCompanyName(supplier.getCompanyName() + " - Updated");
-            success = true;
-            log.info("update() - Изменение прошло успешно.");
-        } else {
-            log.warn("update() - Попытка изменить несуществующую запись!");
+    public List<Supplier> readAll() {
+        var entityManager = emf.createEntityManager();
+        var cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Supplier> cq = cb.createQuery(Supplier.class);
+        Root<Supplier> rootEntry = cq.from(Supplier.class);
+        CriteriaQuery<Supplier> all = cq.select(rootEntry);
+        TypedQuery<Supplier> allQuery = entityManager.createQuery(all);
+        var resultList = allQuery.getResultList();
+        entityManager.close();
+        return resultList;
+    }
+
+    public boolean update(int id, String supplierName, String phone) {
+        var entityManager = emf.createEntityManager();
+        var success = false;
+        var transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            var supplier = entityManager.find(Supplier.class, id);
+            if (Objects.nonNull(supplier)) {
+                supplier.setCompanyName(supplierName);
+                supplier.setPhone(phone);
+                success = true;
+                log.info("update() - Изменение прошло успешно.");
+            } else {
+                log.warn("update() - Попытка изменить несуществующую запись!");
+            }
+            transaction.commit();
+        } catch (RuntimeException e) {
+            log.error("update() - Ошибка при обновлении записи в БД.", e);
+            transaction.rollback();
+        } finally {
+            entityManager.close();
         }
-        entityManager.getTransaction().commit();
         return success;
     }
 
     public boolean delete(int id) {
-        boolean success = false;
-        entityManager.getTransaction().begin();
-        Supplier supplier = entityManager.find(Supplier.class, id);
-        if (Objects.nonNull(supplier)) {
-            entityManager.remove(supplier);
-            success = true;
-            log.info("delete() - Удаление прошло успешно.");
-        } else {
-            log.warn("delete() - Попытка удалить несуществующую запись!");
+        var entityManager = emf.createEntityManager();
+        var success = false;
+        var transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            var supplier = entityManager.find(Supplier.class, id);
+            if (Objects.nonNull(supplier)) {
+                entityManager.remove(supplier);
+                success = true;
+                log.info("delete() - Удаление прошло успешно.");
+            } else {
+                log.warn("delete() - Попытка удалить несуществующую запись!");
+            }
+            transaction.commit();
+        } catch (RuntimeException e) {
+            log.error("delete() - Ошибка при удалении записи из БД.", e);
+            transaction.rollback();
+        } finally {
+            entityManager.close();
         }
-        entityManager.getTransaction().commit();
         return success;
     }
 }

@@ -2,6 +2,7 @@ package com.epam.igushkin.homework.domain.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ public class Supplier {
     private String phone;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     Set<Product> products = new HashSet<>();
 }

@@ -30,5 +30,3 @@ INSERT INTO igushkin.product (product_name, supplier_id, unit_price, is_disconti
 INSERT INTO igushkin.product (product_name, supplier_id, unit_price, is_discontinued)VALUES ('Sukhoi', 5, 150000000, false);
 INSERT INTO igushkin.product (product_name, supplier_id, unit_price, is_discontinued)VALUES ('Alpha Romeo', 1, 25000, false);
 INSERT INTO igushkin.product (product_name, supplier_id, unit_price, is_discontinued)VALUES ('Volga', 3, 4000, false);
-
-INSERT INTO igushkin.order_product VALUES
