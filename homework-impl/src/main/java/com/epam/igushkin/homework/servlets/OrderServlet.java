@@ -1,10 +1,14 @@
 package com.epam.igushkin.homework.servlets;
 
-import com.epam.igushkin.homework.utils.CustomerUtils;
-import com.epam.igushkin.homework.utils.OrderUtils;
+import com.epam.igushkin.homework.domain.entity.Customer;
+import com.epam.igushkin.homework.domain.entity.Order;
+import com.epam.igushkin.homework.domain.entity.Product;
+import com.epam.igushkin.homework.repository.IRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,11 +17,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
+@Service
 @Slf4j
+@RequiredArgsConstructor
 public class OrderServlet extends HttpServlet {
 
-    private final OrderUtils orderUtils = new OrderUtils();
+    private final IRepository<Order> orderRepository;
+    private final IRepository<Customer> customerRepository;
+    private final IRepository<Product> productRepository;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -25,40 +35,54 @@ public class OrderServlet extends HttpServlet {
         var map = request.getParameterMap();
         if (map.containsKey("customerId")) {
             var paramCustomer = Integer.parseInt(request.getParameter("customerId"));
-            response.getWriter().println(new CustomerUtils().read(paramCustomer).get().getOrders());
+            response.getWriter().println(customerRepository.read(paramCustomer).get().getOrders());
         }
         if (map.containsKey("id")) {
             var paramId = Integer.parseInt(request.getParameter("id"));
-            response.getWriter().println(orderUtils.read(paramId).get());
+            response.getWriter().println(orderRepository.read(paramId).get());
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
-        requestToJSON(request);
         var jsonObject = requestToJSON(request);
         var customerId = jsonObject.getInt("customer_id");
-        var orderDate =  LocalDateTime.parse(jsonObject.getString("order_date"));
+        var orderDate = LocalDateTime.parse(jsonObject.getString("order_date"));
         var orderNumber = jsonObject.optString("order_number");
         var totalAmount = jsonObject.getBigDecimal("total_amount");
         var productIdList = new ArrayList<Integer>();
         JSONArray jArray = jsonObject.getJSONArray("product_list"); //parsing the array of ids
         if (jArray != null) {
-            for (int i=0;i<jArray.length();i++){
+            for (int i = 0; i < jArray.length(); i++) {
                 productIdList.add(jArray.getJSONObject(i).getInt("product_id"));
             }
         }
-        var order = orderUtils.create(orderNumber, customerId, orderDate, totalAmount, productIdList);
-        log.info("doPost() - Заказ записан в БД: {} ", order);
+        var customerMadeOrder = customerRepository.read(customerId).get();
+        Set<Product> productSet = new HashSet<>();
+        for (int num : productIdList) {
+            productSet.add(productRepository.read(num).get());
+        }
+        var order = new Order();
+        var ordersOfCustomer = customerMadeOrder.getOrders();
+        ordersOfCustomer.add(order);
+        customerMadeOrder.setOrders(ordersOfCustomer);
+        order.setOrderNumber(orderNumber);
+        order.setTotalAmount(totalAmount);
+        order.setOrderDate(orderDate);
+        order.setCustomer(customerMadeOrder);
+        order.setProducts(productSet);
+        var addedOrder = orderRepository.create(order);
+        log.info("doPost() - Заказ записывается в БД: {} ", order);
+        log.debug("doPost() - Заказ записан в БД: {} ", addedOrder);
         response.setStatus(HttpServletResponse.SC_OK);
-
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
         requestToJSON(request);
+        var success = false;
         JSONObject jsonObject = null;
         try {
             jsonObject = requestToJSON(request);
@@ -69,7 +93,15 @@ public class OrderServlet extends HttpServlet {
         var orderNumber = jsonObject.getString("order_number");
         var customerIdd = jsonObject.getInt("customer_id");
         var totalAmount = jsonObject.getBigDecimal("total_amount");
-        var success = orderUtils.update(id, customerIdd, orderNumber, totalAmount);
+        var updatingOrderOptional = orderRepository.read(id);
+        if (updatingOrderOptional.isPresent()) {
+            var updatingOrder = updatingOrderOptional.get();
+            updatingOrder.setOrderNumber(orderNumber);
+            updatingOrder.setCustomer(customerRepository.read(customerIdd).get());
+            updatingOrder.setTotalAmount(totalAmount);
+            orderRepository.update(updatingOrder);
+            success = true;
+        }
         if (success) {
             response.getWriter().println("The update was successful.");
             response.setStatus(HttpServletResponse.SC_OK);
@@ -83,12 +115,12 @@ public class OrderServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setContentTypeAndEncoding(response);
         var id = Integer.parseInt(request.getParameter("id"));
-        if (orderUtils.read(id).isEmpty()) {
+        if (orderRepository.read(id).isEmpty()) {
             response.getWriter().println("Попытка удалить несуществующую запись.");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        orderUtils.delete(id);
+        orderRepository.delete(id);
         response.getWriter().println("Order № " + id + " удалён.");
     }
 

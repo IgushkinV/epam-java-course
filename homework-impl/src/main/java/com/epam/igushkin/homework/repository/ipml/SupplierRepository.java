@@ -1,35 +1,34 @@
-package com.epam.igushkin.homework.utils;
+package com.epam.igushkin.homework.repository.ipml;
 
-import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Supplier;
+import com.epam.igushkin.homework.repository.IRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+
 @Slf4j
-public class SupplierUtils {
+@RequiredArgsConstructor
+public class SupplierRepository implements IRepository<Supplier> {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManager");
+    private final EntityManagerFactory emf;
 
-    public Supplier create(String companyName, String phone) {
+    public Supplier create(Supplier supplier) {
         var entityManager = emf.createEntityManager();
         var transaction = entityManager.getTransaction();
-        var supplier = new Supplier();
         try {
             transaction.begin();
-            supplier.setCompanyName(companyName);
-            if (Objects.nonNull(phone)) {
-                supplier.setPhone(phone);
-            }
             entityManager.persist(supplier);
             transaction.commit();
             log.info("create() - Запись в БД объекта {}", supplier);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("create() - Запись завершилась неудачно.", e);
             transaction.rollback();
         } finally {
@@ -67,16 +66,16 @@ public class SupplierUtils {
         return resultList;
     }
 
-    public boolean update(int id, String supplierName, String phone) {
+    public boolean update(Supplier supplier) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            var supplier = entityManager.find(Supplier.class, id);
-            if (Objects.nonNull(supplier)) {
-                supplier.setCompanyName(supplierName);
-                supplier.setPhone(phone);
+            var tempSupplier = entityManager.find(Supplier.class, supplier.getSupplierId());
+            if (Objects.nonNull(tempSupplier)) {
+                tempSupplier.setCompanyName(supplier.getCompanyName());
+                tempSupplier.setPhone(supplier.getPhone());
                 success = true;
                 log.info("update() - Изменение прошло успешно.");
             } else {
@@ -84,7 +83,7 @@ public class SupplierUtils {
             }
             transaction.commit();
         } catch (RuntimeException e) {
-            log.error("update() - Ошибка при обновлении записи в БД.", e);
+            log.error("update() - Ошибка во время изменения записи.", e);
             transaction.rollback();
         } finally {
             entityManager.close();

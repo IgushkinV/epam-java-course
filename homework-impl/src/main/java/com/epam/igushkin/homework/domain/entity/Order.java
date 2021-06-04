@@ -22,18 +22,18 @@ public class Order {
     @Column(name = "order_number")
     private String orderNumber;
 
-    @ManyToOne (fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "customer_id")
     @EqualsAndHashCode.Exclude
     private Customer customer;
 
-    @Column (name = "order_date")
+    @Column(name = "order_date")
     private LocalDateTime orderDate;
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
-    @ManyToMany (fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "order_product",
             joinColumns = @JoinColumn(name = "order_id", referencedColumnName = "order_id"),

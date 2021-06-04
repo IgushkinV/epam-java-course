@@ -1,42 +1,36 @@
-package com.epam.igushkin.homework.utils;
+package com.epam.igushkin.homework.repository.ipml;
 
+import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.domain.entity.Product;
+import com.epam.igushkin.homework.repository.IRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
-public class OrderUtils {
+@Service
+@RequiredArgsConstructor
+public class OrderRepository implements IRepository<Order> {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManager");
+    private final EntityManagerFactory emf;
+    private final IRepository<Customer> customerRepository;
+    private final IRepository<Product> productRepository;
 
-    public Order create(String orderNumber, int customerId, LocalDateTime orderDate, BigDecimal totalAmount,
-                        List<Integer> productIds) {
+
+    public Order create(Order order) {
         var entityManager = emf.createEntityManager();
-        var order = new Order();
-        var customerMadeOrder = new CustomerUtils().read(customerId).get();
-        order.setOrderNumber(orderNumber);
-        order.setCustomer(customerMadeOrder);
-        order.setOrderDate(orderDate);
-        order.setTotalAmount(totalAmount);
-        Set<Product> productSet = new HashSet<>();
-        var productUtils = new ProductUtils();
-        for (int num : productIds) {
-            productSet.add(productUtils.read(num).get());
-        }
-        order.setProducts(productSet);
-        var ordersOfCustomer = customerMadeOrder.getOrders();
-        ordersOfCustomer.add(order);
-        customerMadeOrder.setOrders(ordersOfCustomer);
+        var customerMadeOrder = order.getCustomer();
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
@@ -61,6 +55,7 @@ public class OrderUtils {
             transaction.begin();
             order = entityManager.find(Order.class, id);
             transaction.commit();
+            entityManager.merge(order);
             log.info("read() - Считано из БД: {}", order);
         } catch (RuntimeException e) {
             log.error("read() - Ошибка при чтении из БД.", e);
@@ -82,18 +77,18 @@ public class OrderUtils {
         return resultList;
     }
 
-    public boolean update (int id, int customerId, String orderNumber, BigDecimal totalAmount) {
+    public boolean update(Order updatedOrder) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            var order = entityManager.find(Order.class, id);
-            if (Objects.nonNull(order)) {
-                order.setOrderDate(LocalDateTime.of(3000, 1, 1, 0, 0, 0));
-                order.setCustomer(new CustomerUtils().read(customerId).get());
-                order.setTotalAmount(totalAmount);
-                order.setOrderNumber(orderNumber);
+            var oldOrder = entityManager.find(Order.class, updatedOrder.getOrderId());
+            if (Objects.nonNull(oldOrder)) {
+                oldOrder.setOrderDate(LocalDateTime.of(3000, 1, 1, 0, 0, 0));
+                oldOrder.setCustomer(updatedOrder.getCustomer());
+                oldOrder.setTotalAmount(updatedOrder.getTotalAmount());
+                oldOrder.setOrderNumber(updatedOrder.getOrderNumber());
                 success = true;
                 log.info("update() - Изменение прошло успешно.");
             } else {
@@ -109,7 +104,7 @@ public class OrderUtils {
         return success;
     }
 
-    public boolean delete (int id) {
+    public boolean delete(int id) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();

@@ -41,6 +41,7 @@
         <servlet-api.version>2.5</servlet-api.version>
         <json.version>20210307</json.version>
         <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
+        <spring-core.version>5.2.6.RELEASE</spring-core.version>
     </properties>
 
     <build>
@@ -199,10 +200,21 @@
             </dependency>
 
             <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>${maven-war-plugin.version}</version>
-        </dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring-core.version}</version>
+            </dependency>
 
 
         </dependencies>

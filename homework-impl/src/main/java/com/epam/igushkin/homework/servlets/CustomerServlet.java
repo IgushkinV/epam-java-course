@@ -1,9 +1,11 @@
 package com.epam.igushkin.homework.servlets;
 
 import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.utils.CustomerUtils;
+import com.epam.igushkin.homework.repository.IRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,12 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class CustomerServlet extends HttpServlet {
 
-    private final CustomerUtils customerUtils = new CustomerUtils();
+    private final IRepository<Customer> customerRepository;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -24,14 +29,14 @@ public class CustomerServlet extends HttpServlet {
         Customer customer = null;
         if (request.getParameterMap().size() == 0) {
             try {
-                response.getWriter().println(customerUtils.readAll());
+                response.getWriter().println(customerRepository.readAll());
                 return;
             } catch (IOException e) {
                 log.error("doGet() - ошибка при попытке считать все записи", e);
             }
         } else {
             int id = Integer.parseInt(request.getParameter("id"));
-            customer = customerUtils.read(id).get();
+            customer = customerRepository.read(id).get();
         }
         try {
             response.getWriter().println(customer);
@@ -46,7 +51,12 @@ public class CustomerServlet extends HttpServlet {
         var jsonObject = requestToJSON(request);
         var name = jsonObject.getString("customer_name");
         var phone = jsonObject.getString("phone");
-        var customer = customerUtils.create(name, phone);
+        var customer = new Customer();
+        customer.setCustomerName(name);
+        if (Objects.nonNull(phone)) {
+            customer.setPhone(phone);
+        }
+        customerRepository.create(customer); //Нужно ли получать обратно?
         log.info("doPost() - Создан и записан в бд Customer {}", customer);
         response.getWriter().println(customer);
     }
@@ -58,20 +68,24 @@ public class CustomerServlet extends HttpServlet {
         var id = Integer.parseInt(request.getParameter("id"));
         var customerName = jsonObject.getString("customer_name");
         var phone = jsonObject.getString("phone");
-        customerUtils.update(id, customerName, phone);
-        response.getWriter().println(customerUtils.read(id).get());
+        Customer customer = new Customer();
+        customer.setCustomerId(id);
+        customer.setCustomerName(customerName);
+        customer.setPhone(phone);
+        customerRepository.update(customer);
+        response.getWriter().println(customerRepository.read(id).get());
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         setContentTypeAndEncoding(response);
         var id = Integer.parseInt(request.getParameter("id"));
-        if (customerUtils.read(id).isEmpty()) {
+        if (customerRepository.read(id).isEmpty()) {
             response.getWriter().println("Попытка удалить несуществующую запись.");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        customerUtils.delete(id);
+        customerRepository.delete(id);
         response.getWriter().println("Customer № " + id + " удалён.");
     }
 

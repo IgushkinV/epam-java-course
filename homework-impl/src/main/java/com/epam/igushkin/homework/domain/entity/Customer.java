@@ -23,7 +23,7 @@ public class Customer {
     @Column
     private String phone;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "customer", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
