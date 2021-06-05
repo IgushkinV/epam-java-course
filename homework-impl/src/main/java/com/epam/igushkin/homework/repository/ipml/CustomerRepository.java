@@ -1,10 +1,9 @@
 package com.epam.igushkin.homework.repository.ipml;
 
 import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.repository.IRepository;
+import com.epam.igushkin.homework.repository.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
@@ -15,13 +14,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@Repository
+@org.springframework.stereotype.Repository
 @RequiredArgsConstructor
-public class CustomerRepository implements IRepository<Customer> {
+public class CustomerRepository implements Repository<Customer> {
 
     private final EntityManagerFactory emf;
 
-    public Customer create(Customer customer) {
+    public Optional<Customer> create(Customer customer) {
         var entityManager = emf.createEntityManager();
         var transaction = entityManager.getTransaction();
         try {
@@ -35,7 +34,7 @@ public class CustomerRepository implements IRepository<Customer> {
         } finally {
             entityManager.close();
         }
-        return customer;
+        return read(customer.getCustomerId());
     }
 
     public Optional<Customer> read(int id) {
@@ -68,21 +67,21 @@ public class CustomerRepository implements IRepository<Customer> {
         return customerList;
     }
 
-    public boolean update(Customer customer) {
+    public Optional<Customer> update(Customer customer) {
         var entityManager = emf.createEntityManager();
-        var success = false;
         var transaction = entityManager.getTransaction();
+        Customer updatedCustomer = null;
         try {
             transaction.begin();
             var tempCustomer = entityManager.find(Customer.class, customer.getCustomerId());
             if (Objects.nonNull(tempCustomer)) {
                 tempCustomer.setCustomerName(customer.getCustomerName());
                 tempCustomer.setPhone(customer.getPhone());
-                success = true;
                 log.info("update() - Изменение прошло успешно.");
             } else {
                 log.warn("update() - Попытка изменить несуществующую запись!");
             }
+            updatedCustomer = entityManager.find(Customer.class, customer.getCustomerId());
             transaction.commit();
         } catch (RuntimeException e) {
             log.error("update() - Ошибка во время изменения записи.", e);
@@ -90,7 +89,7 @@ public class CustomerRepository implements IRepository<Customer> {
         } finally {
             entityManager.close();
         }
-        return success;
+        return Optional.ofNullable(updatedCustomer);
     }
 
     public boolean delete(int id) {
@@ -99,7 +98,7 @@ public class CustomerRepository implements IRepository<Customer> {
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            Customer customer = entityManager.find(Customer.class, id);
+            var customer = entityManager.find(Customer.class, id);
             if (Objects.nonNull(customer)) {
                 entityManager.remove(customer);
                 success = true;

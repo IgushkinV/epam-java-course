@@ -3,9 +3,10 @@ package com.epam.igushkin.homework.repository.ipml;
 import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.repository.IRepository;
+import com.epam.igushkin.homework.repository.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManagerFactory;
@@ -19,16 +20,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class OrderRepository implements IRepository<Order> {
+public class OrderRepository implements Repository<Order> {
 
     private final EntityManagerFactory emf;
-    private final IRepository<Customer> customerRepository;
-    private final IRepository<Product> productRepository;
+    private final Repository<Customer> customerRepository;
+    private final Repository<Product> productRepository;
 
 
-    public Order create(Order order) {
+    public Optional<Order> create(Order order) {
         var entityManager = emf.createEntityManager();
         var customerMadeOrder = order.getCustomer();
         var transaction = entityManager.getTransaction();
@@ -44,7 +45,7 @@ public class OrderRepository implements IRepository<Order> {
         } finally {
             entityManager.close();
         }
-        return order;
+        return read(order.getOrderId());
     }
 
     public Optional<Order> read(int id) {
@@ -77,19 +78,19 @@ public class OrderRepository implements IRepository<Order> {
         return resultList;
     }
 
-    public boolean update(Order updatedOrder) {
+    public Optional<Order> update(Order changedOrder) {
         var entityManager = emf.createEntityManager();
-        var success = false;
+        Order updatedOrder = null;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            var oldOrder = entityManager.find(Order.class, updatedOrder.getOrderId());
+            var oldOrder = entityManager.find(Order.class, changedOrder.getOrderId());
             if (Objects.nonNull(oldOrder)) {
                 oldOrder.setOrderDate(LocalDateTime.of(3000, 1, 1, 0, 0, 0));
-                oldOrder.setCustomer(updatedOrder.getCustomer());
-                oldOrder.setTotalAmount(updatedOrder.getTotalAmount());
-                oldOrder.setOrderNumber(updatedOrder.getOrderNumber());
-                success = true;
+                oldOrder.setCustomer(changedOrder.getCustomer());
+                oldOrder.setTotalAmount(changedOrder.getTotalAmount());
+                oldOrder.setOrderNumber(changedOrder.getOrderNumber());
+                updatedOrder = entityManager.find(Order.class, changedOrder.getOrderId());
                 log.info("update() - Изменение прошло успешно.");
             } else {
                 log.warn("update() - Попытка изменить несуществующую запись!");
@@ -101,7 +102,7 @@ public class OrderRepository implements IRepository<Order> {
         } finally {
             entityManager.close();
         }
-        return success;
+        return Optional.ofNullable(updatedOrder);
     }
 
     public boolean delete(int id) {

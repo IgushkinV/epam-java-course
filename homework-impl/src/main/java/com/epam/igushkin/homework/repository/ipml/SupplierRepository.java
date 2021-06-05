@@ -1,9 +1,10 @@
 package com.epam.igushkin.homework.repository.ipml;
 
 import com.epam.igushkin.homework.domain.entity.Supplier;
-import com.epam.igushkin.homework.repository.IRepository;
+import com.epam.igushkin.homework.repository.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
@@ -16,11 +17,12 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
-public class SupplierRepository implements IRepository<Supplier> {
+@Component
+public class SupplierRepository implements Repository<Supplier> {
 
     private final EntityManagerFactory emf;
 
-    public Supplier create(Supplier supplier) {
+    public Optional<Supplier> create(Supplier supplier) {
         var entityManager = emf.createEntityManager();
         var transaction = entityManager.getTransaction();
         try {
@@ -34,7 +36,7 @@ public class SupplierRepository implements IRepository<Supplier> {
         } finally {
             entityManager.close();
         }
-        return supplier;
+        return Optional.ofNullable(supplier);
     }
 
     public Optional<Supplier> read(int id) {
@@ -66,9 +68,8 @@ public class SupplierRepository implements IRepository<Supplier> {
         return resultList;
     }
 
-    public boolean update(Supplier supplier) {
+    public Optional<Supplier> update(Supplier supplier) {
         var entityManager = emf.createEntityManager();
-        var success = false;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
@@ -76,7 +77,6 @@ public class SupplierRepository implements IRepository<Supplier> {
             if (Objects.nonNull(tempSupplier)) {
                 tempSupplier.setCompanyName(supplier.getCompanyName());
                 tempSupplier.setPhone(supplier.getPhone());
-                success = true;
                 log.info("update() - Изменение прошло успешно.");
             } else {
                 log.warn("update() - Попытка изменить несуществующую запись!");
@@ -88,7 +88,7 @@ public class SupplierRepository implements IRepository<Supplier> {
         } finally {
             entityManager.close();
         }
-        return success;
+        return read(supplier.getSupplierId());
     }
 
     public boolean delete(int id) {

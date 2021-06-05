@@ -1,12 +1,13 @@
 package com.epam.igushkin.homework;
 
-import com.epam.igushkin.homework.config.ApplicationConfig;
+import com.epam.igushkin.homework.config.JPAConfig;
 import com.epam.igushkin.homework.domain.entity.Product;
 import com.epam.igushkin.homework.repository.ipml.CustomerRepository;
 import com.epam.igushkin.homework.repository.ipml.OrderRepository;
 import com.epam.igushkin.homework.repository.ipml.ProductRepository;
 import com.epam.igushkin.homework.repository.ipml.SupplierRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 public class Main {
     public static void main(String[] args) {
 
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(JPAConfig.class);
         var customerRepository = (CustomerRepository) applicationContext.getBean("customerRepository");
         var customer = customerRepository.read(2).get();
         log.info("{}", customer);
@@ -38,7 +39,6 @@ public class Main {
         orderToUpd.setOrderNumber("Num - Upd");
         log.info("{}", orderRepository.update((orderToUpd)));
         orderRepository.delete(1);
-
         var productRepository = (ProductRepository) applicationContext.getBean("productRepository");
         log.info("{}", productRepository.read(3));
         var productToUpdate = new Product();

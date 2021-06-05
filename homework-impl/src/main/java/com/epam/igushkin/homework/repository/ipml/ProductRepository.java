@@ -1,9 +1,10 @@
 package com.epam.igushkin.homework.repository.ipml;
 
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.repository.IRepository;
+import com.epam.igushkin.homework.repository.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManagerFactory;
@@ -15,15 +16,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Service
+@Component
 @Slf4j
 @RequiredArgsConstructor
-public class ProductRepository implements IRepository<Product> {
+public class ProductRepository implements Repository<Product> {
 
     private final EntityManagerFactory emf;
     private final SupplierRepository supplierRepository;
 
-    public Product create(Product product) {
+    public Optional<Product> create(Product product) {
         var entityManager = emf.createEntityManager();
         var transaction = entityManager.getTransaction();
         try {
@@ -39,13 +40,12 @@ public class ProductRepository implements IRepository<Product> {
         }
         var createdProduct = entityManager.find(Product.class, product.getProductId());
         log.debug("create() - Объект {} был записан в БД", createdProduct);
-        return createdProduct;
+        return Optional.ofNullable(createdProduct);
     }
 
     public Optional<Product> read(int id) {
         var entityManager = emf.createEntityManager();
         var transaction = entityManager.getTransaction();
-        ;
         Product product = null;
         try {
             transaction.begin();
@@ -73,19 +73,17 @@ public class ProductRepository implements IRepository<Product> {
         return resultList;
     }
 
-    public boolean update(Product updatedProduct) {
+    public Optional<Product> update(Product changedProduct) {
         var entityManager = emf.createEntityManager();
-        var success = false;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            var oldProduct = entityManager.find(Product.class, updatedProduct.getProductId());
+            var oldProduct = entityManager.find(Product.class, changedProduct.getProductId());
             if (Objects.nonNull(oldProduct)) {
-                oldProduct.setProductName(updatedProduct.getProductName());
-                oldProduct.setUnitPrice(updatedProduct.getUnitPrice());
+                oldProduct.setProductName(changedProduct.getProductName());
+                oldProduct.setUnitPrice(changedProduct.getUnitPrice());
                 oldProduct.setSupplier(oldProduct.getSupplier());
-                oldProduct.setDiscontinued(updatedProduct.isDiscontinued());
-                success = true;
+                oldProduct.setDiscontinued(changedProduct.isDiscontinued());
                 log.info("update() - Изменение прошло успешно.");
             } else {
                 log.warn("update() - Попытка изменить несуществующую запись!");
@@ -97,7 +95,7 @@ public class ProductRepository implements IRepository<Product> {
         } finally {
             entityManager.close();
         }
-        return success;
+        return read(changedProduct.getProductId());
     }
 
     public boolean delete(int id) {
