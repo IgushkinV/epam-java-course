@@ -1,77 +1,53 @@
 package com.epam.igushkin.homework;
 
-import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.domain.entity.Order;
+import com.epam.igushkin.homework.config.JPAConfig;
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.domain.entity.Supplier;
-import com.epam.igushkin.homework.utils.CustomerUtils;
-import com.epam.igushkin.homework.utils.OrderUtils;
-import com.epam.igushkin.homework.utils.ProductUtils;
-import com.epam.igushkin.homework.utils.SupplierUtils;
+import com.epam.igushkin.homework.repository.ipml.CustomerRepository;
+import com.epam.igushkin.homework.repository.ipml.OrderRepository;
+import com.epam.igushkin.homework.repository.ipml.ProductRepository;
+import com.epam.igushkin.homework.repository.ipml.SupplierRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        demonstrationCustomerUtils();
-        demonstrationOrderUtils();
-        demonstrationSupplierUtils();
-        demonstrateProductUtils();
-    }
-    public static void demonstrationCustomerUtils() {
-        CustomerUtils customerUtils = new CustomerUtils();
-        log.info("demonstrationCustomerUtils() - 5th line customer: {}", customerUtils.read(5).get());
-        var customerName = "Additional";
-        var customerPhone = "+777777777";
-        customerUtils.create(customerName, customerPhone);
-        customerUtils.update(1, "Updated-v3", "upd+33333");
-        customerUtils.delete(3);
-    }
 
-    public static void demonstrationOrderUtils() {
-        OrderUtils orderUtils = new OrderUtils();
-        Optional<Order> opt = orderUtils.read(5);
-        if (opt.isPresent()) {
-            log.info("demonstrationOrderUtils() - order with id = 5: {}", opt.get());
-        } else {
-            log.info("demonstrationOrderUtils() - No order with id = 5");
-        }
-        var orderNumber = "Add№";
-        var customerId = 1;
-        var orderDate = LocalDateTime.now();
-        var totalAmount = BigDecimal.valueOf(1000);
-        var order = orderUtils.create(orderNumber, customerId, orderDate, totalAmount, List.of(2));
-        log.info("New Order was created and added: {}", order);
-        orderUtils.update(1, 3,"123-123", BigDecimal.valueOf(100500));
-        orderUtils.delete(3);
-    }
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(JPAConfig.class);
+        var customerRepository = (CustomerRepository) applicationContext.getBean("customerRepository");
+        var customer = customerRepository.read(2).get();
+        log.info("{}", customer);
+        customer.setCustomerName("After updating");
+        customer.setCustomerId(10);
+        log.info("{}", customerRepository.update(customer));
 
-    public static void demonstrationSupplierUtils() {
-        var supplierUtils = new SupplierUtils();
-        var companyName = "EPAM";
-        var phone = "+9999999990";
-        var newSupplier = supplierUtils.create(companyName, phone);
-        log.info("demonstrationSupplierUtils() - new supplier was created: {}", newSupplier);
-        var tempSupplier = supplierUtils.create(companyName, phone);
-        log.info("demonstrationSupplierUtils() - updating of tempSupplier: {}",
-                supplierUtils.update(4, "Upd-name", "upd+777894656"));
-        log.info("demonstrationSupplierUtils() - deleting of tempSupplier: {}",
-                supplierUtils.delete(tempSupplier.getSupplierId()));
-    }
+        var supplierRepository = (SupplierRepository) applicationContext.getBean("supplierRepository");
+        var supplier = supplierRepository.read(3).get();
+        log.info("{}", supplier);
+        supplier.setCompanyName("After updating");
+        supplier.setPhone("00000000");
+        supplierRepository.update(supplier);
+        log.info("{}", supplierRepository.read(3).get());
 
-    public static void demonstrateProductUtils() {
-        var productUtils = new ProductUtils();
-        var productName = "IT secret system";
-        var supplierId = 7;
-        var unitPrice = BigDecimal.valueOf(150);
-        productUtils.create(productName, supplierId, unitPrice, false);
-        log.info("demonstrateProductUtils() - Read from table Product: {}", productUtils.read(3).get());
-        productUtils.update(3, "Upd: Milk", 1, BigDecimal.valueOf(50), false);
-        log.info("demonstrateProductUtils() - Delete product 3: {}", productUtils.delete(3));
+        var orderRepository = (OrderRepository) applicationContext.getBean("orderRepository");
+        log.info("{}", orderRepository.read(4).get());
+        var orderToUpd = orderRepository.read(4).get();
+        orderToUpd.setOrderNumber("Num - Upd");
+        log.info("{}", orderRepository.update((orderToUpd)));
+        orderRepository.delete(1);
+        var productRepository = (ProductRepository) applicationContext.getBean("productRepository");
+        log.info("{}", productRepository.read(3));
+        var productToUpdate = new Product();
+        productToUpdate.setProductName("Updated-04062021");
+        productToUpdate.setSupplier(supplierRepository.read(1).get());
+        var orderSet = Set.of(orderRepository.read(4).get(), orderRepository.read(5).get());
+        productToUpdate.setOrders(orderSet);
+        productToUpdate.setProductId(2);
+        productRepository.update(productToUpdate);
+        log.info("After update: {}", productRepository.read(2));
     }
 }

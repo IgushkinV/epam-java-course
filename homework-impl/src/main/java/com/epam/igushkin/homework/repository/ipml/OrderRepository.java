@@ -1,42 +1,37 @@
-package com.epam.igushkin.homework.utils;
+package com.epam.igushkin.homework.repository.ipml;
 
+import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.domain.entity.Product;
+import com.epam.igushkin.homework.repository.Repository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
-public class OrderUtils {
+@Component
+@RequiredArgsConstructor
+public class OrderRepository implements Repository<Order> {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManager");
+    private final EntityManagerFactory emf;
+    private final Repository<Customer> customerRepository;
+    private final Repository<Product> productRepository;
 
-    public Order create(String orderNumber, int customerId, LocalDateTime orderDate, BigDecimal totalAmount,
-                        List<Integer> productIds) {
+
+    public Optional<Order> create(Order order) {
         var entityManager = emf.createEntityManager();
-        var order = new Order();
-        var customerMadeOrder = new CustomerUtils().read(customerId).get();
-        order.setOrderNumber(orderNumber);
-        order.setCustomer(customerMadeOrder);
-        order.setOrderDate(orderDate);
-        order.setTotalAmount(totalAmount);
-        Set<Product> productSet = new HashSet<>();
-        var productUtils = new ProductUtils();
-        for (int num : productIds) {
-            productSet.add(productUtils.read(num).get());
-        }
-        order.setProducts(productSet);
-        var ordersOfCustomer = customerMadeOrder.getOrders();
-        ordersOfCustomer.add(order);
-        customerMadeOrder.setOrders(ordersOfCustomer);
+        var customerMadeOrder = order.getCustomer();
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
@@ -50,7 +45,7 @@ public class OrderUtils {
         } finally {
             entityManager.close();
         }
-        return order;
+        return read(order.getOrderId());
     }
 
     public Optional<Order> read(int id) {
@@ -61,6 +56,7 @@ public class OrderUtils {
             transaction.begin();
             order = entityManager.find(Order.class, id);
             transaction.commit();
+            entityManager.merge(order);
             log.info("read() - Считано из БД: {}", order);
         } catch (RuntimeException e) {
             log.error("read() - Ошибка при чтении из БД.", e);
@@ -82,19 +78,19 @@ public class OrderUtils {
         return resultList;
     }
 
-    public boolean update (int id, int customerId, String orderNumber, BigDecimal totalAmount) {
+    public Optional<Order> update(Order changedOrder) {
         var entityManager = emf.createEntityManager();
-        var success = false;
+        Order updatedOrder = null;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            var order = entityManager.find(Order.class, id);
-            if (Objects.nonNull(order)) {
-                order.setOrderDate(LocalDateTime.of(3000, 1, 1, 0, 0, 0));
-                order.setCustomer(new CustomerUtils().read(customerId).get());
-                order.setTotalAmount(totalAmount);
-                order.setOrderNumber(orderNumber);
-                success = true;
+            var oldOrder = entityManager.find(Order.class, changedOrder.getOrderId());
+            if (Objects.nonNull(oldOrder)) {
+                oldOrder.setOrderDate(LocalDateTime.of(3000, 1, 1, 0, 0, 0));
+                oldOrder.setCustomer(changedOrder.getCustomer());
+                oldOrder.setTotalAmount(changedOrder.getTotalAmount());
+                oldOrder.setOrderNumber(changedOrder.getOrderNumber());
+                updatedOrder = entityManager.find(Order.class, changedOrder.getOrderId());
                 log.info("update() - Изменение прошло успешно.");
             } else {
                 log.warn("update() - Попытка изменить несуществующую запись!");
@@ -106,10 +102,10 @@ public class OrderUtils {
         } finally {
             entityManager.close();
         }
-        return success;
+        return Optional.ofNullable(updatedOrder);
     }
 
-    public boolean delete (int id) {
+    public boolean delete(int id) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();

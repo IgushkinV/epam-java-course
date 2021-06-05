@@ -1,16 +1,19 @@
 package com.epam.igushkin.homework.services;
 
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Optional;
 
 public interface CRUDService<T> {
 
-    public void create(T entity);
+    Optional<T> create(JSONObject jsonObject);
 
-    public Optional<T> retrieve(int id);
+    Optional<T> read(int id);
 
-    public boolean update(int id);
+    List<T> readAll();
 
-    public boolean delete(int id);
+    Optional<T> update(int id, JSONObject jsonObject);
 
-
+    boolean delete(int id);
 }

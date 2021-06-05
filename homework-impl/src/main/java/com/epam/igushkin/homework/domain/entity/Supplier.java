@@ -3,11 +3,13 @@ package com.epam.igushkin.homework.domain.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Component
 @Data
 @Entity
 @Table
@@ -24,7 +26,7 @@ public class Supplier {
     @Column
     private String phone;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "supplier")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     Set<Product> products = new HashSet<>();

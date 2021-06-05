@@ -1,34 +1,34 @@
-package com.epam.igushkin.homework.utils;
+package com.epam.igushkin.homework.repository.ipml;
 
-import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.domain.entity.Product;
+import com.epam.igushkin.homework.repository.Repository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.*;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transaction;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Component
 @Slf4j
-public class ProductUtils {
+@RequiredArgsConstructor
+public class ProductRepository implements Repository<Product> {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("EntityManager");
+    private final EntityManagerFactory emf;
+    private final SupplierRepository supplierRepository;
 
-    public Product create(String productName, int supplierId, BigDecimal unitPrice, boolean isDiscontinued) {
+    public Optional<Product> create(Product product) {
         var entityManager = emf.createEntityManager();
-        var product = new Product();
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            product.setProductName(productName);
-            product.setSupplier(new SupplierUtils().read(supplierId).get());
-            product.setDiscontinued(isDiscontinued);
-            product.setUnitPrice(unitPrice);
             entityManager.persist(product);
             transaction.commit();
             log.info("create() - Запись в БД объекта {}", product);
@@ -38,12 +38,14 @@ public class ProductUtils {
         } finally {
             entityManager.close();
         }
-        return product;
+        var createdProduct = entityManager.find(Product.class, product.getProductId());
+        log.debug("create() - Объект {} был записан в БД", createdProduct);
+        return Optional.ofNullable(createdProduct);
     }
 
     public Optional<Product> read(int id) {
         var entityManager = emf.createEntityManager();
-        var transaction = entityManager.getTransaction();;
+        var transaction = entityManager.getTransaction();
         Product product = null;
         try {
             transaction.begin();
@@ -71,19 +73,17 @@ public class ProductUtils {
         return resultList;
     }
 
-    public boolean update (int id, String productName, int supplierId, BigDecimal unitPrice, boolean isDiscontinued) {
+    public Optional<Product> update(Product changedProduct) {
         var entityManager = emf.createEntityManager();
-        var success = false;
         var transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            var product = entityManager.find(Product.class, id);
-            if (Objects.nonNull(product)) {
-                product.setProductName(productName);
-                product.setUnitPrice(unitPrice);
-                product.setSupplier(new SupplierUtils().read(supplierId).get());
-                product.setDiscontinued(isDiscontinued);
-                success = true;
+            var oldProduct = entityManager.find(Product.class, changedProduct.getProductId());
+            if (Objects.nonNull(oldProduct)) {
+                oldProduct.setProductName(changedProduct.getProductName());
+                oldProduct.setUnitPrice(changedProduct.getUnitPrice());
+                oldProduct.setSupplier(oldProduct.getSupplier());
+                oldProduct.setDiscontinued(changedProduct.isDiscontinued());
                 log.info("update() - Изменение прошло успешно.");
             } else {
                 log.warn("update() - Попытка изменить несуществующую запись!");
@@ -95,10 +95,10 @@ public class ProductUtils {
         } finally {
             entityManager.close();
         }
-        return success;
+        return read(changedProduct.getProductId());
     }
 
-    public boolean delete (int id) {
+    public boolean delete(int id) {
         var entityManager = emf.createEntityManager();
         var success = false;
         var transaction = entityManager.getTransaction();
