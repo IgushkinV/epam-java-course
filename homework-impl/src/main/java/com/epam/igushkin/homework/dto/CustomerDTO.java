@@ -4,7 +4,6 @@ import com.epam.igushkin.homework.domain.entity.Order;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,5 +16,5 @@ public class CustomerDTO extends AbstractDTO{
 
     private String phone;
 
-    private List<Order> orders = new ArrayList<>();
+    private List<Order> orders;
 }

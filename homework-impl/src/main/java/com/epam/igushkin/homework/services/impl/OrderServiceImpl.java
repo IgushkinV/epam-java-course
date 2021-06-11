@@ -1,98 +1,66 @@
 package com.epam.igushkin.homework.services.impl;
 
-import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Order;
-import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.dto.CustomerDTO;
-import com.epam.igushkin.homework.repository.ipml.CustomerRepository;
-import com.epam.igushkin.homework.repository.ipml.OrderRepository;
-import com.epam.igushkin.homework.repository.ipml.ProductRepository;
-import com.epam.igushkin.homework.services.Service;
+import com.epam.igushkin.homework.exceptions.NoEntityFoundException;
+import com.epam.igushkin.homework.repository.OrderRepository;
+import com.epam.igushkin.homework.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 @Slf4j
-@org.springframework.stereotype.Service
+@Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements Service<Order> {
+public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CustomerRepository customerRepository;
-    private final ProductRepository productRepository;
 
     @Override
-    public Optional<Order> create(JSONObject jsonObject) {
-        var customerId = jsonObject.getInt("customer_id");
-        var orderDate = LocalDateTime.parse(jsonObject.getString("order_date"));
-        var orderNumber = jsonObject.optString("order_number");
-        var totalAmount = jsonObject.getBigDecimal("total_amount");
-        var productIdList = new ArrayList<Integer>();
-        JSONArray jArray = jsonObject.getJSONArray("product_list"); //parsing the array of ids
-        if (jArray != null) {
-            for (int i = 0; i < jArray.length(); i++) {
-                productIdList.add(jArray.getJSONObject(i).getInt("product_id"));
-            }
+    public Order save(Order order) {
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public Order findById(Integer id) {
+        var orderOpt = orderRepository.findById(id);
+        return orderOpt.orElseThrow(() ->new NoEntityFoundException("Невозможно найти заказ с номером " + id));
+    }
+
+    @Override
+    public Order update(Integer id, Order order) {
+        var oldOrderOpt = orderRepository.findById(id);
+        if (oldOrderOpt.isEmpty()) {
+            throw new NoEntityFoundException("Заказ с id" + id + "не найден.");
         }
-        var customerMadeOrder = customerRepository.read(customerId).get();
-        Set<Product> productSet = new HashSet<>();
-        for (int num : productIdList) {
-            productSet.add(productRepository.read(num).get());
+        var oldOrder = oldOrderOpt.get();
+        oldOrder.setOrderNumber(order.getOrderNumber())
+                .setOrderDate(order.getOrderDate())
+                .setTotalAmount(order.getTotalAmount());
+        return orderRepository.save(oldOrder);
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        boolean success = false;
+        if (orderRepository.existsById(id)) {
+            orderRepository.delete(orderRepository.findById(id).get());
+            success = true;
+            log.info("delete() - Удаление прошло успешно.");
+        } else {
+            log.info("delete() - Нечего удалить.");
         }
-        var order = new Order();
-        var ordersOfCustomer = customerMadeOrder.getOrders();
-        ordersOfCustomer.add(order);
-        customerMadeOrder.setOrders(ordersOfCustomer);
-        order.setOrderNumber(orderNumber);
-        order.setTotalAmount(totalAmount);
-        order.setOrderDate(orderDate);
-        order.setCustomer(customerMadeOrder);
-        order.setProducts(productSet);
-        return orderRepository.create(order);
+        return success;
     }
 
-    @Override
-    public Optional<Order> read(int id) {
-        return orderRepository.read(id);
-    }
+    /*public List<Order> getOrders(Long customerId) {
 
-    @Override
-    public List<Order> readAll() {
-        return orderRepository.readAll();
-    }
-
-    @Override
-    public Optional<Order> update(int id, JSONObject jsonObject) {
-        var orderNumber = jsonObject.getString("order_number");
-        var customerIdd = jsonObject.getInt("customer_id");
-        var totalAmount = jsonObject.getBigDecimal("total_amount");
-        var updatingOrder = new Order();
-        updatingOrder.setOrderNumber(orderNumber);
-        updatingOrder.setCustomer(customerRepository.read(customerIdd).get());
-        updatingOrder.setTotalAmount(totalAmount);
-        return orderRepository.update(updatingOrder);
-}
-
-    @Override
-    public boolean delete(int id) {
-        return false;
-    }
-
-    public List<Order> getOrders(int customerId) {
-        return customerRepository.read(customerId).get().getOrders();
-    }
-
-    @Override
-    public Customer mapDTOToEntity(CustomerDTO dto) {
-        var customer = new Customer();
-        customer.setCustomerName(dto.getCustomerName());
-        if (Objects.nonNull(dto.getPhone())) {
-            customer.setPhone(dto.getPhone());
-        }
-        return customer;
-    }
+        return orderRepository.findAllByCustomerId(customerId);
+    }*/
 }

@@ -1,88 +1,61 @@
 package com.epam.igushkin.homework.services.impl;
 
 import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.dto.CustomerDTO;
-import com.epam.igushkin.homework.exceptions.MyServiceException;
-import com.epam.igushkin.homework.repository.ipml.CustomerRepository;
-import com.epam.igushkin.homework.services.Service;
+import com.epam.igushkin.homework.exceptions.NoEntityFoundException;
+import com.epam.igushkin.homework.repository.CustomerRepository;
+import com.epam.igushkin.homework.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-@org.springframework.stereotype.Service
+@Service
 @Slf4j
 @RequiredArgsConstructor
-public class CustomerServiceImpl implements Service<Customer, CustomerDTO> {
+public class CustomerServiceImpl implements CustomerService {
 
-    private final CustomerRepository customerRepository;
+    private CustomerRepository customerRepository;
 
     @Override
-    public CustomerDTO create(CustomerDTO dto) {
-        CustomerDTO createdCustomerDTO = null;
-        var customer = mapDTOToEntity(dto);
-        var createdCustomerOpt = customerRepository.create(customer);
-        if (createdCustomerOpt.isPresent()) {
-            createdCustomerDTO = mapEntityToDTO(createdCustomerOpt.get());
-            log.debug("create() - Считан из репозитория: {}", createdCustomerDTO);
+    public Customer save(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public List<Customer> getAll() {
+        return (List<Customer>) customerRepository.findAll();
+    }
+
+    @Override
+    public Customer findById(Integer id) {
+        var customerOpt = customerRepository.findById(id);
+        log.debug("findById() - Найден заказчик {}", customerOpt);
+        return customerOpt.orElseThrow(() -> new NoEntityFoundException("Заказчик с id" + id + "не найден."));
+    }
+
+    @Override
+    public Customer update(Integer id, Customer customer) {
+        var oldCustomerOpt = customerRepository.findById(id);
+        if (oldCustomerOpt.isEmpty()) {
+            throw new NoEntityFoundException("Поставщик с id" + id + "не найден.");
+        }
+        var oldCustomer = oldCustomerOpt.get();
+        oldCustomer.setCustomerName(customer.getCustomerName())
+                .setPhone(customer.getPhone());
+        return customerRepository.save(oldCustomer);
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        boolean success = false;
+        if (customerRepository.existsById(id)) {
+            customerRepository.delete(customerRepository.findById(id).get());
+            success = true;
+            log.info("delete() - Удаление прошло успешно.");
         } else {
-            throw new MyServiceException("Получение null при попытке считать записанный ранее объект.");
+            log.info("delete() - Нечего удалить.");
         }
-        return createdCustomerDTO;
-    }
-
-    @Override
-    public CustomerDTO read(int id) {
-        var readCustomerOpt = customerRepository.read(id);
-        if (readCustomerOpt.isPresent()) {
-            return mapEntityToDTO(readCustomerOpt.get());
-        } else {
-            throw new MyServiceException("Получение null при попытке считать из репозитория.");
-        }
-    }
-
-    @Override
-    public List<CustomerDTO> readAll() {
-        return customerRepository.readAll().stream()
-                .map(this::mapEntityToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public CustomerDTO update(CustomerDTO dto) {
-        var updatedCustomer = customerRepository.update(mapDTOToEntity(dto));
-        if (updatedCustomer.isPresent()) {
-            return mapEntityToDTO(updatedCustomer.get());
-        } else {
-            throw new MyServiceException("Получение null при чтении обновленного объекта из репозитория.");
-        }
-    }
-
-    @Override
-    public boolean delete(int id) {
-        return customerRepository.delete(id);
-    }
-
-    @Override
-    public Customer mapDTOToEntity(CustomerDTO dto) {
-        var customer = new Customer();
-        customer.setCustomerName(dto.getCustomerName());
-        if (Objects.nonNull(dto.getPhone())) {
-            customer.setPhone(dto.getPhone());
-        }
-        return customer;
-    }
-
-    @Override
-    public CustomerDTO mapEntityToDTO(Customer entity) {
-        return CustomerDTO.builder()
-                .customerId(entity.getCustomerId())
-                .customerName(entity.getCustomerName())
-                .phone(entity.getPhone())
-                .build();
+        return success;
     }
 }

@@ -2,6 +2,7 @@ package com.epam.igushkin.homework.domain.entity;
 
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@Accessors(chain = true)
 public class Product {
 
     @Id

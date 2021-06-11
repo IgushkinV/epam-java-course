@@ -3,6 +3,7 @@ package com.epam.igushkin.homework.domain.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Data
 @Entity
+@Accessors(chain = true)
 public class Customer {
 
     @Id

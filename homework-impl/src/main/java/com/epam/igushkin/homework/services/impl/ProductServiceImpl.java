@@ -1,63 +1,63 @@
 package com.epam.igushkin.homework.services.impl;
 
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.dto.ProductDTO;
-import com.epam.igushkin.homework.repository.ipml.ProductRepository;
-import com.epam.igushkin.homework.repository.ipml.SupplierRepository;
-import com.epam.igushkin.homework.services.Service;
+import com.epam.igushkin.homework.exceptions.NoEntityFoundException;
+import com.epam.igushkin.homework.repository.ProductRepository;
+import com.epam.igushkin.homework.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
-@org.springframework.stereotype.Service
+@Service
 @RequiredArgsConstructor
-public class ProductServiceImpl implements Service<Product, ProductDTO> {
+public class ProductServiceImpl implements ProductService {
 
-    private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
 
     @Override
-    public ProductDTO create(ProductDTO dto) {
-        var newProduct = new Product();
-        newProduct.setProductName(dto.getProductName());
-        newProduct.setUnitPrice(dto.getUnitPrice());
-        newProduct.setDiscontinued(dto.isDiscontinued());
-        newProduct.setSupplier(supplierRepository.read(dto).get());
-        var product = productRepository.create(newProduct);
-        return product;
+    public Product save(Product product) {
+        return productRepository.save(product);
     }
 
     @Override
-    public Optional<Product> read(int id) {
-        return productRepository.read(id);
+    public List<Product> getAll() {
+        return productRepository.findAll();
     }
 
     @Override
-    public List<Product> readAll() {
-        return productRepository.readAll();
+    public Product findById(Long id) {
+        var productOptional = productRepository.findById(id);
+        return productOptional.orElseThrow(() -> new NoEntityFoundException("Невозможно найти Продукт с номером " + id));
     }
 
     @Override
-    public Optional<Product> update(int id, JSONObject jsonObject) {
-        var productName = jsonObject.getString("product_name");
-        var supplierId = jsonObject.getInt("supplier_id");
-        var unitPrice = jsonObject.getBigDecimal("unit_price");
-        var isDiscontinued = jsonObject.getBoolean("is_discontinued");
-        var updatedProduct = new Product();
-        updatedProduct.setProductId(id);
-        updatedProduct.setProductName(productName);
-        updatedProduct.setSupplier(supplierRepository.read(supplierId).get());
-        updatedProduct.setUnitPrice(unitPrice);
-        updatedProduct.setDiscontinued(isDiscontinued);
-        return productRepository.update(updatedProduct);
+    public Product update(Long id, Product product) {
+        var oldProductOpt = productRepository.findById(id);
+        if (oldProductOpt.isEmpty()) {
+            throw new NoEntityFoundException("Заказ с id" + id + "не найден.");
+        }
+        var oldProduct = oldProductOpt.get();
+        oldProduct.setProductName(product.getProductName())
+                .setSupplier(product.getSupplier())
+                .setDiscontinued(product.isDiscontinued())
+                .setUnitPrice(product.getUnitPrice())
+                .setOrders(product.getOrders());
+        return productRepository.save(product);
     }
 
     @Override
-    public boolean delete(int id) {
-        return productRepository.delete(id);
+    public boolean delete(Long id) {
+        boolean success = false;
+        if (productRepository.existsById(id)) {
+            productRepository.delete(productRepository.findById(id).get());
+            success = true;
+            log.info("delete() - Удаление прошло успешно.");
+        } else {
+            log.info("delete() - Нечего удалить.");
+        }
+        return success;
     }
 }

@@ -17,7 +17,7 @@ public class OrderDTO extends AbstractDTO{
 
     private String orderNumber;
 
-    private CustomerDTO customer;
+    private Customer customer;
 
     private LocalDateTime orderDate;
 

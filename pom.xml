@@ -28,6 +28,7 @@
         <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
+        <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
 
         <lombok.version>1.18.12</lombok.version>
         <logback-classic.version>1.2.3</logback-classic.version>
@@ -40,8 +41,11 @@
         <hibernate-core.version>5.4.31.Final</hibernate-core.version>
         <servlet-api.version>2.5</servlet-api.version>
         <json.version>20210307</json.version>
-        <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
         <spring-core.version>5.2.6.RELEASE</spring-core.version>
+        <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
+        <jackson-databind.version>2.9.2</jackson-databind.version>
+        <validation-api.version>2.0.0.Final</validation-api.version>
+        <spring-data-jpa.version>2.2.7.RELEASE</spring-data-jpa.version>
     </properties>
 
     <build>
@@ -69,6 +73,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
             </plugin>
 
             <plugin>
@@ -184,14 +194,6 @@
                 <version>${hibernate-core.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>${servlet-api.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
             <dependency>
                 <groupId>org.json</groupId>
@@ -214,6 +216,39 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring-core.version}</version>
+            </dependency>
+            <!-- Spring Web MVC -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Для маппинга в JSON -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+
+            <!-- JSR 349 -->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+
+            <!-- Spring Data -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring-data-jpa.version}</version>
             </dependency>
 
 

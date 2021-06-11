@@ -3,6 +3,7 @@ package com.epam.igushkin.homework.domain.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@Accessors(chain = true)
 @Table(name = "[order]")
 public class Order {
 
