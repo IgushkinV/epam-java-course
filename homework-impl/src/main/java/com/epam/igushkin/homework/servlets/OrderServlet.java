@@ -1,24 +1,34 @@
 package com.epam.igushkin.homework.servlets;
 
-import com.epam.igushkin.homework.services.impl.OrderCRUDServiceImpl;
+import com.epam.igushkin.homework.domain.entity.Order;
+import com.epam.igushkin.homework.domain.entity.Product;
+import com.epam.igushkin.homework.dto.OrderDTO;
+import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
+import com.epam.igushkin.homework.services.impl.OrderServiceImpl;
+import com.epam.igushkin.homework.services.impl.ProductServiceImpl;
 import com.epam.igushkin.homework.servlets.utils.ServletUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-@Service
+
 @Slf4j
 @RequiredArgsConstructor
 public class OrderServlet extends HttpServlet {
 
-
-    private final OrderCRUDServiceImpl orderService;
+    private final OrderServiceImpl orderService;
+    private final CustomerServiceImpl customerService;
+    private final ProductServiceImpl productService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -38,6 +48,40 @@ public class OrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletUtils.setContentTypeAndEncoding(response);
         var jsonObject = ServletUtils.requestToJSON(request);
+        /*----------------*/
+        var customerMadeOrder = customerService.read(jsonObject.getInt("customer_id"));
+        /*------------------------------ вынести отсюда -----------*/
+        var productIdList = new ArrayList<Integer>();
+        JSONArray jArray = jsonObject.getJSONArray("product_list"); //parsing the array of ids
+        if (jArray != null) {
+            for (int i = 0; i < jArray.length(); i++) {
+                productIdList.add(jArray.getJSONObject(i).getInt("product_id"));
+            }
+        }
+        Set<Product> productSet = new HashSet<>();
+        for (int num : productIdList) {
+            productSet.add(productService.read(num).get());
+        }
+        /*----------------------------------------------------------*/
+        var orderDate = LocalDateTime.parse(jsonObject.getString("order_date"));
+        var orderDTO = OrderDTO.builder()
+                .orderNumber(jsonObject.optString("order_number"))
+                .customer(customerService.read(jsonObject.getInt("customer_id")))
+                .orderDate(orderDate)
+                .totalAmount(jsonObject.getBigDecimal("total_amount"))
+                .products()
+
+        var order = new Order();
+        var ordersOfCustomer = customerMadeOrder.getOrders();
+        ordersOfCustomer.add(order);
+        customerMadeOrder.setOrders(ordersOfCustomer);
+        order.setOrderNumber(orderNumber);
+        order.setTotalAmount(totalAmount);
+        order.setOrderDate(orderDate);
+        order.setCustomer(customerMadeOrder);
+        order.setProducts(productSet);
+
+        /*------------------------  было  */
         var addedOrder = orderService.create(jsonObject);
         log.info("doPost() - Заказ передан для записи в БД. Сервис вернул: {} ", addedOrder);
         response.setStatus(HttpServletResponse.SC_OK);

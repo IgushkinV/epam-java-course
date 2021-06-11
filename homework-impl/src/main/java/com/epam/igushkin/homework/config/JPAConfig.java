@@ -13,31 +13,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 @Configuration
-@ComponentScan("src/main/java/com/epam/igushkin/homework")
+@ComponentScan("com/epam/igushkin/homework")
 public class JPAConfig {
 
     @Bean
     public EntityManagerFactory entityManagerFactory() {
         return Persistence.createEntityManagerFactory("EntityManagerFactory");
-    }
-
-    @Bean
-    public CustomerRepository customerRepository() {
-        return new CustomerRepository(entityManagerFactory());
-    }
-
-    @Bean
-    public SupplierRepository supplierRepository() {
-        return new SupplierRepository(entityManagerFactory());
-    }
-
-    @Bean
-    public ProductRepository productRepository() {
-        return new ProductRepository(entityManagerFactory(), supplierRepository());
-    }
-
-    @Bean
-    public OrderRepository orderRepository() {
-        return new OrderRepository(entityManagerFactory(), customerRepository(), productRepository());
     }
 }

@@ -1,11 +1,10 @@
 package com.epam.igushkin.homework.servlets;
 
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.services.impl.ProductCRUDServiceImpl;
+import com.epam.igushkin.homework.services.impl.ProductServiceImpl;
 import com.epam.igushkin.homework.servlets.utils.ServletUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@Service
+
 @RequiredArgsConstructor
 public class ProductServlet extends HttpServlet {
 
-    private final ProductCRUDServiceImpl productService;
+    private final ProductServiceImpl productService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

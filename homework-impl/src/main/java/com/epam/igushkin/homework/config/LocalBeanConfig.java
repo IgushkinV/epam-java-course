@@ -1,10 +1,10 @@
 package com.epam.igushkin.homework.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 
+@Profile("local")
 @Configuration
-@Import(JPAConfig.class)
-public class ServiceConfig {
+public class LocalBeanConfig {
 
 }

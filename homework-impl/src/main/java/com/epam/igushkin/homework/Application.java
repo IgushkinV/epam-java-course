@@ -14,7 +14,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.Set;
 
 @Slf4j
-public class Main {
+public class Application {
     public static void main(String[] args) {
 
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(JPAConfig.class);
@@ -49,5 +49,6 @@ public class Main {
         productToUpdate.setProductId(2);
         productRepository.update(productToUpdate);
         log.info("After update: {}", productRepository.read(2));
+        productRepository.delete(2);
     }
 }

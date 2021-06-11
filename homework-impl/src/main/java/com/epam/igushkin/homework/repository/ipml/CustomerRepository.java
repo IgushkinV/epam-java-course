@@ -4,6 +4,7 @@ import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.repository.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
@@ -14,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@org.springframework.stereotype.Repository
+@Component
 @RequiredArgsConstructor
 public class CustomerRepository implements Repository<Customer> {
 

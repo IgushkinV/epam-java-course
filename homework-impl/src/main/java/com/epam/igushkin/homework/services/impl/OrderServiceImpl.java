@@ -3,24 +3,23 @@ package com.epam.igushkin.homework.services.impl;
 import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.repository.Repository;
+import com.epam.igushkin.homework.dto.CustomerDTO;
 import com.epam.igushkin.homework.repository.ipml.CustomerRepository;
 import com.epam.igushkin.homework.repository.ipml.OrderRepository;
 import com.epam.igushkin.homework.repository.ipml.ProductRepository;
-import com.epam.igushkin.homework.services.CRUDService;
+import com.epam.igushkin.homework.services.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
-public class OrderCRUDServiceImpl implements CRUDService<Order> {
+public class OrderServiceImpl implements Service<Order> {
 
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
@@ -85,5 +84,15 @@ public class OrderCRUDServiceImpl implements CRUDService<Order> {
 
     public List<Order> getOrders(int customerId) {
         return customerRepository.read(customerId).get().getOrders();
+    }
+
+    @Override
+    public Customer mapDTOToEntity(CustomerDTO dto) {
+        var customer = new Customer();
+        customer.setCustomerName(dto.getCustomerName());
+        if (Objects.nonNull(dto.getPhone())) {
+            customer.setPhone(dto.getPhone());
+        }
+        return customer;
     }
 }

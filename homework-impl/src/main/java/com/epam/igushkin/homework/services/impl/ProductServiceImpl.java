@@ -1,39 +1,32 @@
 package com.epam.igushkin.homework.services.impl;
 
 import com.epam.igushkin.homework.domain.entity.Product;
-import com.epam.igushkin.homework.domain.entity.Supplier;
-import com.epam.igushkin.homework.repository.Repository;
+import com.epam.igushkin.homework.dto.ProductDTO;
 import com.epam.igushkin.homework.repository.ipml.ProductRepository;
 import com.epam.igushkin.homework.repository.ipml.SupplierRepository;
-import com.epam.igushkin.homework.services.CRUDService;
+import com.epam.igushkin.homework.services.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.criterion.Order;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Service
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
-public class ProductCRUDServiceImpl implements CRUDService<Product> {
+public class ProductServiceImpl implements Service<Product, ProductDTO> {
 
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
 
     @Override
-    public Optional<Product> create(JSONObject jsonObject) {
-        var name = jsonObject.getString("product_name");
-        var unitPrice = jsonObject.getBigDecimal("unit_price");
-        var supplierId = jsonObject.getInt("supplier_id");
-        var isDiscontinued = jsonObject.getBoolean("is_discontinued");
+    public ProductDTO create(ProductDTO dto) {
         var newProduct = new Product();
-        newProduct.setProductName(name);
-        newProduct.setUnitPrice(unitPrice);
-        newProduct.setDiscontinued(isDiscontinued);
-        newProduct.setSupplier(supplierRepository.read(supplierId).get());
+        newProduct.setProductName(dto.getProductName());
+        newProduct.setUnitPrice(dto.getUnitPrice());
+        newProduct.setDiscontinued(dto.isDiscontinued());
+        newProduct.setSupplier(supplierRepository.read(dto).get());
         var product = productRepository.create(newProduct);
         return product;
     }
