@@ -17,22 +17,46 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
+    /**
+     * Сохраняет заказ в репозитории.
+     *
+     * @param order
+     * @return Order сохраненный заказ.
+     */
     @Override
     public Order save(Order order) {
         return orderRepository.save(order);
     }
 
+    /**
+     * Получает все заказы из репозитория.
+     *
+     * @return List<Order> - список заказов.
+     */
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
     }
 
+    /**
+     * Ищет заказ по его id в репозитории.
+     *
+     * @param id уникальный номер заказа.
+     * @return Order - найденный заказ.
+     */
     @Override
     public Order findById(Integer id) {
         var orderOpt = orderRepository.findById(id);
         return orderOpt.orElseThrow(() ->new NoEntityFoundException("Невозможно найти заказ с номером " + id));
     }
 
+    /**
+     * Обновляет данные заказа в репозитории.
+     *
+     * @param id уникальный номер заказа
+     * @param order данные для обновления заказа.
+     * @return обновленынй заказ.
+     */
     @Override
     public Order update(Integer id, Order order) {
         var oldOrderOpt = orderRepository.findById(id);
@@ -46,6 +70,12 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(oldOrder);
     }
 
+    /**
+     * Удаляет заказ из репоозитория по его id.
+     *
+     * @param id уникальный номер заказа.
+     * @return результат удаления (true или false).
+     */
     @Override
     public boolean delete(Integer id) {
         boolean success = false;
@@ -58,9 +88,4 @@ public class OrderServiceImpl implements OrderService {
         }
         return success;
     }
-
-    /*public List<Order> getOrders(Long customerId) {
-
-        return orderRepository.findAllByCustomerId(customerId);
-    }*/
 }

@@ -4,6 +4,9 @@ import com.epam.igushkin.homework.domain.entity.Order;
 
 import java.util.List;
 
+/**
+ * Описывает методы для сохранения, получения, удаления, изменения заказа.
+ */
 public interface OrderService {
 
     Order save(Order order);

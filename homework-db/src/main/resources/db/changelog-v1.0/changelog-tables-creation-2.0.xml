@@ -2,10 +2,11 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="2021-05-20-create-table-customer" author="Vladimir_Igushkin">
         <createTable tableName="customer" schemaName="igushkin">
-            <column name="customer_id" type="int">
+            <column name="customer_id" type="int" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="customer_name" type="varchar(50)">
@@ -17,7 +18,7 @@
 
     <changeSet id="2021-02-22-create-table-supplier" author="Vladimir_Igushkin">
         <createTable tableName="supplier" schemaName="igushkin">
-            <column name="supplier_id" type="int">
+            <column name="supplier_id" type="int" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="company_name" type="varchar(40)">
@@ -29,7 +30,7 @@
 
     <changeSet id="2021-05-22-create-table-order" author="Vladimir_Igushkin">
         <createTable tableName="order" schemaName="igushkin">
-            <column name="order_id" type="int">
+            <column name="order_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="order_number" type="varchar(10)"/>
@@ -49,7 +50,7 @@
 
     <changeSet id="2021-05-22-create-table-product" author="Vladimir_Igushkin">
         <createTable tableName="product" schemaName="igushkin">
-            <column name="product_id" type="int">
+            <column name="product_id" type="int" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="product_name" type="varchar(50)">

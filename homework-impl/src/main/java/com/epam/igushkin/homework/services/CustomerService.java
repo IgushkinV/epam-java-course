@@ -1,10 +1,12 @@
 package com.epam.igushkin.homework.services;
 
 import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.dto.CustomerDTO;
 
 import java.util.List;
 
+/**
+ * Описывает методы для сохранения, получения, удаления, изменения заказчика.
+ */
 public interface CustomerService {
 
     Customer save(Customer customer);

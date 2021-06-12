@@ -17,10 +17,6 @@ import java.util.Map;
 @EnableTransactionManagement
 @EnableJpaRepositories("com/epam/igushkin/homework/")
 public class JpaConfig {
-    /*@Bean
-    public EntityManagerFactory entityManagerFactory() {
-        return Persistence.createEntityManagerFactory("EntityManagerFactory");
-    }*/
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {

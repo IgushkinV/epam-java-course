@@ -4,6 +4,9 @@ import com.epam.igushkin.homework.domain.entity.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Интерфейс для работы с репозиторием и выполения CRUD операций.
+ */
 @Repository
-public interface SupplierRepository extends JpaRepository<Supplier, Long> {
+public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
 }

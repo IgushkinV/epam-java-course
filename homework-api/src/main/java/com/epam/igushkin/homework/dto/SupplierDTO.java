@@ -1,6 +1,5 @@
 package com.epam.igushkin.homework.dto;
 
-import com.epam.igushkin.homework.domain.entity.Product;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +7,7 @@ import java.util.Set;
 
 @Data
 @Builder
-public class SupplierDTO extends AbstractDTO{
+public class SupplierDTO {
 
     private int supplierId;
 
@@ -16,7 +15,7 @@ public class SupplierDTO extends AbstractDTO{
 
     private String phone;
 
-    Set<Product> products;
+    Set<Integer> products;
 
 
 }

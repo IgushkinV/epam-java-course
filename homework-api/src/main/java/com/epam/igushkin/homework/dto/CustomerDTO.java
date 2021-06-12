@@ -1,6 +1,5 @@
 package com.epam.igushkin.homework.dto;
 
-import com.epam.igushkin.homework.domain.entity.Order;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class CustomerDTO extends AbstractDTO{
+public class CustomerDTO {
 
     private int customerId;
 
@@ -16,5 +15,5 @@ public class CustomerDTO extends AbstractDTO{
 
     private String phone;
 
-    private List<Order> orders;
+    private List<Integer> orders;
 }

@@ -17,25 +17,49 @@ public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
 
+    /**
+     * Сохраняет поставщика в репозитории.
+     *
+     * @param supplier данные поставщика для сохранения.
+     * @return сохраненный поставщик.
+     */
     @Override
     public Supplier save(Supplier supplier) {
         return supplierRepository.save(supplier);
 
     }
 
+    /**
+     * Возвращает всех поставщиков из репозитория.
+     *
+     * @return список поставщиков.
+     */
     @Override
     public List<Supplier> getAll() {
         return supplierRepository.findAll();
     }
 
+    /**
+     * Находит поставщика по его id в репозитории.
+     *
+     * @param id уникальный номер поставщика.
+     * @return найденный поставщик.
+     */
     @Override
-    public Supplier findById(Long id) {
+    public Supplier findById(Integer id) {
         var supplierOptional = supplierRepository.findById(id);
         return supplierOptional.orElseThrow(() -> new NoEntityFoundException("Невозможно найти Поставщика с номером " + id));
     }
 
+    /**
+     * Обвновляет данные поставщика в репозитории.
+     *
+     * @param id уникальный номер поставщика.
+     * @param supplier данные для обновления поставщика.
+     * @return обновленный поставщик.
+     */
     @Override
-    public Supplier update(Long id, Supplier supplier) {
+    public Supplier update(Integer id, Supplier supplier) {
         var oldSupplierOpt = supplierRepository.findById(id);
         if (oldSupplierOpt.isEmpty()) {
             throw new NoEntityFoundException("Поставщик с id" + id + "не найден.");
@@ -46,8 +70,14 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierRepository.save(oldSupplier);
     }
 
+    /**
+     * Удаляет поставщика из репозитория.
+     *
+     * @param id уникальный номер поставщика.
+     * @return результат удаления поставщика (true или false).
+     */
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Integer id) {
         boolean success = false;
         if (supplierRepository.existsById(id)) {
             supplierRepository.delete(supplierRepository.findById(id).get());

@@ -23,7 +23,7 @@
         <maven-compiler-plugin.target>11</maven-compiler-plugin.target>
         <jacoco-maven-plugin.haltOnFailure>true</jacoco-maven-plugin.haltOnFailure>
         <!--TODO: Поставить обратно 0.7-->
-        <jacoco-maven-plugin.minimum>0.5</jacoco-maven-plugin.minimum>
+        <jacoco-maven-plugin.minimum>0.7</jacoco-maven-plugin.minimum>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>

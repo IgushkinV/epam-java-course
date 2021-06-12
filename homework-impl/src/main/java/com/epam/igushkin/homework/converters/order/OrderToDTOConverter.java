@@ -13,7 +13,7 @@ public class OrderToDTOConverter implements Converter<Order, OrderDTO> {
     @Override
     public OrderDTO convert(Order order) {
         var dto = OrderDTO.builder()
-                .customer(order.getCustomer())
+                .customerId(order.getCustomer().getCustomerId())
                 .orderNumber(order.getOrderNumber())
                 .orderDate(order.getOrderDate())
                 .totalAmount(order.getTotalAmount())

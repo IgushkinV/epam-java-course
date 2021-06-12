@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Содержит реализацию методов для работы с репозиторием CustomerRepository.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -17,16 +20,32 @@ public class CustomerServiceImpl implements CustomerService {
 
     private CustomerRepository customerRepository;
 
+    /**
+     * Сохраняет заказчика в репозиторий.
+     *
+     * @param customer
+     * @return сохраненного заказчика.
+     */
     @Override
     public Customer save(Customer customer) {
         return customerRepository.save(customer);
     }
 
+    /**
+     * Считывает всех заказчиков из репозитория.
+     *
+     * @return List<Customer>
+     */
     @Override
     public List<Customer> getAll() {
         return (List<Customer>) customerRepository.findAll();
     }
 
+    /**
+     * Находит всех заказчика в репозитории по id.
+     * @param id уникальный номер заказчика в репозитории.
+     * @return Customer
+     */
     @Override
     public Customer findById(Integer id) {
         var customerOpt = customerRepository.findById(id);
@@ -34,6 +53,13 @@ public class CustomerServiceImpl implements CustomerService {
         return customerOpt.orElseThrow(() -> new NoEntityFoundException("Заказчик с id" + id + "не найден."));
     }
 
+    /**
+     * Обновляет данные заказчика в репозитории.
+     *
+     * @param id уникальный номер заказчика.
+     * @param customer данные заказчика, которые нужно обновить.
+     * @return Customer
+     */
     @Override
     public Customer update(Integer id, Customer customer) {
         var oldCustomerOpt = customerRepository.findById(id);
@@ -46,6 +72,12 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.save(oldCustomer);
     }
 
+    /**
+     * Удаляет заказчика из репозирория по его id.
+     *
+     * @param id уникальный номер заказчика в репозитории.
+     * @return результат удаления (true или false).
+     */
     @Override
     public boolean delete(Integer id) {
         boolean success = false;

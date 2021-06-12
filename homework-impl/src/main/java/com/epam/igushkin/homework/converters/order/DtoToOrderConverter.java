@@ -14,7 +14,6 @@ public class DtoToOrderConverter implements Converter<OrderDTO, Order> {
         var order = new Order()
                 .setOrderNumber(orderDTO.getOrderNumber())
                 .setOrderDate(orderDTO.getOrderDate())
-                .setCustomer(orderDTO.getCustomer())
                 .setTotalAmount(orderDTO.getTotalAmount());
         log.info("convert() - DTO {} to Order {}", orderDTO, order);
         return order;

@@ -1,19 +1,21 @@
 package com.epam.igushkin.homework.services;
 
-import com.epam.igushkin.homework.domain.entity.Product;
 import com.epam.igushkin.homework.domain.entity.Supplier;
 
 import java.util.List;
 
+/**
+ * Описывает методы для сохранения, получения, удаления, изменения поставщика.
+ */
 public interface SupplierService {
 
     Supplier save(Supplier supplier);
 
     List<Supplier> getAll();
 
-    Supplier findById(Long id);
+    Supplier findById(Integer id);
 
-    Supplier update (Long id, Supplier product);
+    Supplier update (Integer id, Supplier product);
 
-    boolean delete (Long id);
+    boolean delete (Integer id);
 }

@@ -1,7 +1,5 @@
 package com.epam.igushkin.homework.dto;
 
-import com.epam.igushkin.homework.domain.entity.Customer;
-import com.epam.igushkin.homework.domain.entity.Product;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,17 +9,17 @@ import java.util.Set;
 
 @Data
 @Builder
-public class OrderDTO extends AbstractDTO{
+public class OrderDTO {
 
     private int orderId;
 
     private String orderNumber;
 
-    private Customer customer;
+    private Integer customerId;
 
     private LocalDateTime orderDate;
 
     private BigDecimal totalAmount;
 
-    private Set<Product> products;
+    private Set<Integer> products;
 }

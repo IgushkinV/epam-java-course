@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value = "/customer")
+@RequestMapping(value = "/order")
 public interface OrderResource {
 
     @GetMapping("/{id}")
