@@ -12,12 +12,12 @@ public class OrderToDTOConverter implements Converter<Order, OrderDTO> {
 
     @Override
     public OrderDTO convert(Order order) {
-        var dto = OrderDTO.builder()
-                .customerId(order.getCustomer().getCustomerId())
-                .orderNumber(order.getOrderNumber())
-                .orderDate(order.getOrderDate())
-                .totalAmount(order.getTotalAmount())
-                .build();
+        var dto = new OrderDTO()
+                .setOrderId(order.getOrderId())
+                .setCustomerId(order.getCustomer().getCustomerId())
+                .setOrderNumber(order.getOrderNumber())
+                .setOrderDate(order.getOrderDate().toString())
+                .setTotalAmount(order.getTotalAmount());
         log.info("convert() - Order {} to DTO {}", order, dto);
         return dto;
     }

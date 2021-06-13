@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 public class SupplierToDTOConverter implements Converter<Supplier, SupplierDTO> {
     @Override
     public SupplierDTO convert(Supplier supplier) {
-        var dto = SupplierDTO.builder()
-                .companyName(supplier.getCompanyName())
-                .phone(supplier.getPhone())
-                .build();
+        var dto = new SupplierDTO()
+                .setSupplierId(supplier.getSupplierId())
+                .setCompanyName(supplier.getCompanyName())
+                .setPhone(supplier.getPhone());
         log.info("convert() - Supplier {} to DTO {}", supplier, dto);
         return dto;
     }

@@ -12,10 +12,10 @@ public class CustomerToDTOConverter implements Converter<Customer, CustomerDTO> 
     @Override
     public CustomerDTO convert(Customer customer) {
         log.debug("convert() - Получен Customer на вход: {}", customer);
-        CustomerDTO.builder();
-        return CustomerDTO.builder()
-                .customerName(customer.getCustomerName())
-                .phone(customer.getPhone())
-                .build();
+        var customerDTO = new CustomerDTO();
+        return customerDTO
+                .setCustomerId(customer.getCustomerId())
+                .setCustomerName(customer.getCustomerName())
+                .setPhone(customer.getPhone());
     }
 }

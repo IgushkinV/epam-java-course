@@ -3,10 +3,13 @@ import com.epam.igushkin.homework.converters.order.DtoToOrderConverter;
 import com.epam.igushkin.homework.converters.order.OrderToDTOConverter;
 import com.epam.igushkin.homework.dto.OrderDTO;
 import com.epam.igushkin.homework.resources.OrderResource;
+import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import com.epam.igushkin.homework.services.impl.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 public class OrderResourceImpl implements OrderResource {
 
     private final OrderServiceImpl orderService;
+    private final CustomerServiceImpl customerService;
     private final OrderToDTOConverter orderToDTOConverter;
     private final DtoToOrderConverter dtoToOrderConverter;
 
@@ -68,9 +72,10 @@ public class OrderResourceImpl implements OrderResource {
     @Override
     public OrderDTO updateOrder(OrderDTO orderDTO) {
         var order = orderService.findById(orderDTO.getOrderId());
-        order.setOrderDate(orderDTO.getOrderDate())
+        order.setOrderDate(LocalDateTime.parse(orderDTO.getOrderDate()))
                 .setTotalAmount(orderDTO.getTotalAmount())
-                .setOrderNumber(orderDTO.getOrderNumber());
+                .setOrderNumber(orderDTO.getOrderNumber())
+                .setCustomer(customerService.findById(orderDTO.getCustomerId()));
         var updatedOrder = orderService.save(order);
         log.info("updateOrder() - {}", updatedOrder);
         return orderToDTOConverter.convert(updatedOrder);

@@ -1,13 +1,16 @@
 package com.epam.igushkin.homework.dto;
 
-import lombok.Builder;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
-@Builder
+@Accessors(chain = true)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ProductDTO {
 
     private int productId;

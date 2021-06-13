@@ -1,15 +1,14 @@
 package com.epam.igushkin.homework.resources;
 
 import com.epam.igushkin.homework.dto.CustomerDTO;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value = "/customer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/customer")
 public interface CustomerResource {
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     CustomerDTO getCustomer(@PathVariable("id") Integer id);
 
     @GetMapping
@@ -22,7 +21,7 @@ public interface CustomerResource {
     CustomerDTO updateCustomer(@PathVariable Integer id,
                                @RequestBody CustomerDTO customerDTO);
 
-    @DeleteMapping("/{id")
+    @DeleteMapping("/{id}")
     boolean deleteCustomer(@PathVariable Integer id);
 
 }

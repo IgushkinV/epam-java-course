@@ -1,10 +1,9 @@
 package com.epam.igushkin.homework.resources.impl;
 import com.epam.igushkin.homework.converters.customer.CustomerToDTOConverter;
 import com.epam.igushkin.homework.converters.customer.DtoToCustomerConverter;
-import com.epam.igushkin.homework.converters.customer.StringToCustomerDTOConverter;
 import com.epam.igushkin.homework.dto.CustomerDTO;
 import com.epam.igushkin.homework.resources.CustomerResource;
-import com.epam.igushkin.homework.services.CustomerService;
+import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,10 +18,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerResourceImpl implements CustomerResource {
 
-    private final CustomerService customerService;
+    private final CustomerServiceImpl customerService;
     private final CustomerToDTOConverter customerToDTOConverter;
     private final DtoToCustomerConverter dtoToCustomerConverter;
-    private final StringToCustomerDTOConverter converter;
 
     /**
      * Получает Customer по id из базы.
@@ -58,7 +56,6 @@ public class CustomerResourceImpl implements CustomerResource {
      */
     @Override
     public CustomerDTO addCustomer(CustomerDTO customerDTO) {
-        //var customerDTO = converter.convert(customerDTO); //попытка из стринга достать dto
         var customer = dtoToCustomerConverter.convert(customerDTO);
         var savedCustomerDTO = customerToDTOConverter.convert(customerService.save(customer));
         return savedCustomerDTO;

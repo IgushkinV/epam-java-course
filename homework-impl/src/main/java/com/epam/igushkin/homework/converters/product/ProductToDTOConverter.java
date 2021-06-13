@@ -12,11 +12,12 @@ import org.springframework.stereotype.Component;
 public class ProductToDTOConverter implements Converter<Product, ProductDTO> {
     @Override
     public ProductDTO convert(Product product) {
-        var dto = ProductDTO.builder()
-                .isDiscontinued(product.isDiscontinued())
-                .productName(product.getProductName())
-                .unitPrice(product.getUnitPrice())
-                .build();
+        var dto = new ProductDTO()
+                .setProductId(product.getProductId())
+                .setDiscontinued(product.isDiscontinued())
+                .setProductName(product.getProductName())
+                .setUnitPrice(product.getUnitPrice())
+                .setSupplierId(product.getSupplier().getSupplierId());
         log.info("convert() - Product {} to DTO {}", product, dto);
         return dto;
     }

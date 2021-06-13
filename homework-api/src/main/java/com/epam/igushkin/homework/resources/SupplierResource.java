@@ -1,13 +1,11 @@
 package com.epam.igushkin.homework.resources;
 
-import com.epam.igushkin.homework.dto.ProductDTO;
 import com.epam.igushkin.homework.dto.SupplierDTO;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value = "/supplier", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/supplier")
 public interface SupplierResource {
 
     @GetMapping("/{id}")

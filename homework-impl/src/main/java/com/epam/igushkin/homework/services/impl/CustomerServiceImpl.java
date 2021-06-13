@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     /**
      * Сохраняет заказчика в репозиторий.
@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer findById(Integer id) {
         var customerOpt = customerRepository.findById(id);
         log.debug("findById() - Найден заказчик {}", customerOpt);
-        return customerOpt.orElseThrow(() -> new NoEntityFoundException("Заказчик с id" + id + "не найден."));
+        return customerOpt.orElseThrow(() -> new NoEntityFoundException("Заказчик с id " + id + " не найден."));
     }
 
     /**
