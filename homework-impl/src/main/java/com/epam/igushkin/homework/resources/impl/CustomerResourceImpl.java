@@ -4,9 +4,14 @@ import com.epam.igushkin.homework.converters.customer.DtoToCustomerConverter;
 import com.epam.igushkin.homework.dto.CustomerDTO;
 import com.epam.igushkin.homework.resources.CustomerResource;
 import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
+import com.epam.igushkin.homework.validator.CustomerDTOValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +60,7 @@ public class CustomerResourceImpl implements CustomerResource {
      * @return CustomerDTO с данными добавленного заказчика.
      */
     @Override
-    public CustomerDTO addCustomer(CustomerDTO customerDTO) {
+    public CustomerDTO addCustomer(@Valid CustomerDTO customerDTO) {
         var customer = dtoToCustomerConverter.convert(customerDTO);
         var savedCustomerDTO = customerToDTOConverter.convert(customerService.save(customer));
         return savedCustomerDTO;
@@ -89,5 +94,10 @@ public class CustomerResourceImpl implements CustomerResource {
         boolean result = customerService.delete(id);
         log.info("deleteCustomer() - {}", result);
         return result;
+    }
+
+    @InitBinder
+    protected void initBinder (WebDataBinder webDataBinder) {
+        webDataBinder.setValidator(new CustomerDTOValidator());
     }
 }
