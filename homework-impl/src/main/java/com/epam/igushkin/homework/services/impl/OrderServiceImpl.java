@@ -6,9 +6,11 @@ import com.epam.igushkin.homework.repository.OrderRepository;
 import com.epam.igushkin.homework.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -16,6 +18,7 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final MessageSource errorSource;
 
     /**
      * Сохраняет заказ в репозитории.
@@ -47,7 +50,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findById(Integer id) {
         var orderOpt = orderRepository.findById(id);
-        return orderOpt.orElseThrow(() ->new NoEntityFoundException("Невозможно найти заказ с номером " + id));
+        Object[] args = {id.intValue()};
+        String exceptionMessageLocale = errorSource.getMessage("noOrder", args, Locale.getDefault());
+        return orderOpt.orElseThrow(() -> new NoEntityFoundException(exceptionMessageLocale));
     }
 
     /**

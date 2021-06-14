@@ -6,9 +6,11 @@ import com.epam.igushkin.homework.repository.ProductRepository;
 import com.epam.igushkin.homework.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -16,6 +18,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final MessageSource errorSource;
 
     /**
      * Сохраняет продукт в репозитроий.
@@ -47,7 +50,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findById(Integer id) {
         var productOptional = productRepository.findById(id);
-        return productOptional.orElseThrow(() -> new NoEntityFoundException("Невозможно найти Продукт с номером " + id));
+        Object[] args = {id.intValue()};
+        String exceptionMessageLocale = errorSource.getMessage("noProduct", args, Locale.getDefault());
+        return productOptional.orElseThrow(() -> new NoEntityFoundException(exceptionMessageLocale));
     }
 
     /**

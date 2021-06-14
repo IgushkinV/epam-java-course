@@ -6,9 +6,11 @@ import com.epam.igushkin.homework.repository.SupplierRepository;
 import com.epam.igushkin.homework.services.SupplierService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -16,6 +18,7 @@ import java.util.List;
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
+    private final MessageSource errorSource;
 
     /**
      * Сохраняет поставщика в репозитории.
@@ -48,7 +51,9 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public Supplier findById(Integer id) {
         var supplierOptional = supplierRepository.findById(id);
-        return supplierOptional.orElseThrow(() -> new NoEntityFoundException("Невозможно найти Поставщика с номером " + id));
+        Object[] args = {id.intValue()};
+        String exceptionMessageLocale = errorSource.getMessage("noSupplier", args, Locale.getDefault());
+        return supplierOptional.orElseThrow(() -> new NoEntityFoundException(exceptionMessageLocale));
     }
 
     /**

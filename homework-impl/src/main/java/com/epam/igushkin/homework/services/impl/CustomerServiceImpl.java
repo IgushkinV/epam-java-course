@@ -6,9 +6,11 @@ import com.epam.igushkin.homework.repository.CustomerRepository;
 import com.epam.igushkin.homework.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Содержит реализацию методов для работы с репозиторием CustomerRepository.
@@ -19,6 +21,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final MessageSource errorSource;
 
     /**
      * Сохраняет заказчика в репозиторий.
@@ -50,7 +53,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer findById(Integer id) {
         var customerOpt = customerRepository.findById(id);
         log.debug("findById() - Найден заказчик {}", customerOpt);
-        return customerOpt.orElseThrow(() -> new NoEntityFoundException("Заказчик с id " + id + " не найден."));
+        Object[] args = {id};
+        String message = errorSource.getMessage("noCustomer", args , Locale.getDefault());
+        return customerOpt.orElseThrow(() -> new NoEntityFoundException(message));
     }
 
     /**
