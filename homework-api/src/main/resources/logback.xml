@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.epam.igushkin.homework.Main" additivity="false" >
+    <logger name="com.epam.igushkin.homework.Application" additivity="false" >
         <level value="info" />
         <appender-ref ref="STDOUT"/>
     </logger>

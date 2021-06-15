@@ -3,6 +3,7 @@ package com.epam.igushkin.homework.domain.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table
+@Accessors(chain = true)
 public class Supplier {
 
     @Id
