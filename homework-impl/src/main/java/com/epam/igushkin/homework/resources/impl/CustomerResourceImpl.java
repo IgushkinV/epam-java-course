@@ -1,7 +1,10 @@
 package com.epam.igushkin.homework.resources.impl;
+
 import com.epam.igushkin.homework.converters.customer.CustomerToDTOConverter;
 import com.epam.igushkin.homework.converters.customer.DtoToCustomerConverter;
+import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.dto.CustomerDTO;
+import com.epam.igushkin.homework.logger.Logging;
 import com.epam.igushkin.homework.resources.CustomerResource;
 import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import com.epam.igushkin.homework.validator.CustomerDTOValidator;
@@ -31,9 +34,10 @@ public class CustomerResourceImpl implements CustomerResource {
      * Получает Customer по id из базы.
      *
      * @param id уникальный номер заказчика в базе.
-     * @return  CustomerDTO, содержит данные заказчика, считанного из базы.
+     * @return CustomerDTO, содержит данные заказчика, считанного из базы.
      */
     @Override
+    @Logging
     public CustomerDTO getCustomer(Integer id) {
         log.debug("getCustomer() - id = {}", id);
         var customer = customerService.findById(id);
@@ -59,6 +63,7 @@ public class CustomerResourceImpl implements CustomerResource {
      * @param customerDTO содержит данные заказчика, которого нужно добавить.
      * @return CustomerDTO с данными добавленного заказчика.
      */
+    @Logging
     @Override
     public CustomerDTO addCustomer(@Valid CustomerDTO customerDTO) {
         var customer = dtoToCustomerConverter.convert(customerDTO);
@@ -69,16 +74,18 @@ public class CustomerResourceImpl implements CustomerResource {
     /**
      * Обновляет данные заказчика по id.
      *
-     * @param id уникальный номер заказчика в базе.
+     * @param id          уникальный номер заказчика в базе.
      * @param customerDTO содержит данные для обновления заказчика.
      * @return CustomerDTO с обновленными данными заказчика.
      */
+    @Logging
     @Override
-    public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) {
-        var customer = customerService.findById(id);
-        customer.setCustomerName(customerDTO.getCustomerName())
+    public CustomerDTO updateCustomer(Integer id, @Valid CustomerDTO customerDTO) {
+        var customer = new Customer()
+                .setCustomerId(id)
+                .setCustomerName(customerDTO.getCustomerName())
                 .setPhone(customerDTO.getPhone());
-        var updatedCustomer = customerService.save(customer);
+        var updatedCustomer = customerService.update(customer);
         log.info("updateCustomer() - {}", updatedCustomer);
         return customerToDTOConverter.convert(updatedCustomer);
     }
@@ -97,7 +104,7 @@ public class CustomerResourceImpl implements CustomerResource {
     }
 
     @InitBinder
-    protected void initBinder (WebDataBinder webDataBinder) {
+    protected void initBinder(WebDataBinder webDataBinder) {
         webDataBinder.setValidator(new CustomerDTOValidator());
     }
 }

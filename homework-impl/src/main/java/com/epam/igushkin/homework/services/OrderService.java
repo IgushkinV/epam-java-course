@@ -15,9 +15,9 @@ public interface OrderService {
 
     Order findById(Integer id);
 
-    Order update (Integer id, Order customer);
+    Order update(Order order);
 
-    boolean delete (Integer id);
+    boolean delete(Integer id);
 
     /*List<Order> getOrders (Long customerId);*/
 }

@@ -16,9 +16,11 @@ import java.time.LocalDateTime;
 public class DtoToOrderConverter implements Converter<OrderDTO, Order> {
 
     private final CustomerServiceImpl customerService;
+
     @Override
     public Order convert(OrderDTO orderDTO) {
         var order = new Order()
+                .setOrderId(orderDTO.getOrderId())
                 .setOrderNumber(orderDTO.getOrderNumber())
                 .setOrderDate(LocalDateTime.parse(orderDTO.getOrderDate()))
                 .setTotalAmount(orderDTO.getTotalAmount())

@@ -15,7 +15,7 @@ public interface SupplierService {
 
     Supplier findById(Integer id);
 
-    Supplier update (Integer id, Supplier product);
+    Supplier update(Supplier supplier);
 
-    boolean delete (Integer id);
+    boolean delete(Integer id);
 }

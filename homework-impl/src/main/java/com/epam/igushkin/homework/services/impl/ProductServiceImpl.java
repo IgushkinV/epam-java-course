@@ -58,12 +58,12 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Обновляет данные продукт в репозитории.
      *
-     * @param id уникальный номер продукта.
      * @param product данные для обновления продукта.
      * @return обновленный продукт.
      */
     @Override
-    public Product update(Integer id, Product product) {
+    public Product update(Product product) {
+        var id = product.getProductId();
         var oldProductOpt = productRepository.findById(id);
         if (oldProductOpt.isEmpty()) {
             throw new NoEntityFoundException("Заказ с id" + id + "не найден.");

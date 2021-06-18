@@ -1,4 +1,5 @@
 package com.epam.igushkin.homework.converters.product;
+
 import com.epam.igushkin.homework.domain.entity.Product;
 import com.epam.igushkin.homework.dto.ProductDTO;
 import com.epam.igushkin.homework.services.impl.SupplierServiceImpl;
@@ -17,6 +18,7 @@ public class DtoToProductConverter implements Converter<ProductDTO, Product> {
     @Override
     public Product convert(ProductDTO dto) {
         var product = new Product()
+                .setProductId(dto.getProductId())
                 .setProductName(dto.getProductName())
                 .setDiscontinued(dto.isDiscontinued())
                 .setUnitPrice(dto.getUnitPrice())

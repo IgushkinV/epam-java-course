@@ -1,4 +1,5 @@
 package com.epam.igushkin.homework.resources.impl;
+
 import com.epam.igushkin.homework.converters.order.DtoToOrderConverter;
 import com.epam.igushkin.homework.converters.order.OrderToDTOConverter;
 import com.epam.igushkin.homework.dto.OrderDTO;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +27,7 @@ public class OrderResourceImpl implements OrderResource {
      * Получает Заказ по id из базы.
      *
      * @param id уникальный номер заказа в базе.
-     * @return  OrderDTO, содержит данные заказа, считанного из базы.
+     * @return OrderDTO, содержит данные заказа, считанного из базы.
      */
     @Override
     public OrderDTO get(Integer id) {
@@ -39,7 +39,7 @@ public class OrderResourceImpl implements OrderResource {
     /**
      * Получает все заказы из базы.
      *
-      * @return
+     * @return
      */
     @Override
     public List<OrderDTO> getAllOrders() {
@@ -66,23 +66,21 @@ public class OrderResourceImpl implements OrderResource {
 
     /**
      * Обновляет данные заказчика по id.
+     *
      * @param orderDTO содержир данные заказа, которые нужно обновить.
      * @return OrderDTO с обновленным данными заказа.
      */
     @Override
     public OrderDTO updateOrder(OrderDTO orderDTO) {
-        var order = orderService.findById(orderDTO.getOrderId());
-        order.setOrderDate(LocalDateTime.parse(orderDTO.getOrderDate()))
-                .setTotalAmount(orderDTO.getTotalAmount())
-                .setOrderNumber(orderDTO.getOrderNumber())
-                .setCustomer(customerService.findById(orderDTO.getCustomerId()));
-        var updatedOrder = orderService.save(order);
+        var order = dtoToOrderConverter.convert(orderDTO);
+        var updatedOrder = orderService.update(order);
         log.info("updateOrder() - {}", updatedOrder);
         return orderToDTOConverter.convert(updatedOrder);
     }
 
     /**
      * Удаляет заказ из базы.
+     *
      * @param id уникальыне номер заказа.
      * @return результат удаления (true или false).
      */

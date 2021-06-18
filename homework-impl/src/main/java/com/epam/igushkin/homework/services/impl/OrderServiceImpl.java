@@ -2,6 +2,7 @@ package com.epam.igushkin.homework.services.impl;
 
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.exceptions.NoEntityFoundException;
+import com.epam.igushkin.homework.logger.Logging;
 import com.epam.igushkin.homework.repository.OrderRepository;
 import com.epam.igushkin.homework.services.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
      * @param order
      * @return Order сохраненный заказ.
      */
+    @Logging
     @Override
     public Order save(Order order) {
         return orderRepository.save(order);
@@ -58,12 +60,12 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Обновляет данные заказа в репозитории.
      *
-     * @param id уникальный номер заказа
      * @param order данные для обновления заказа.
      * @return обновленынй заказ.
      */
     @Override
-    public Order update(Integer id, Order order) {
+    public Order update(Order order) {
+        var id = order.getOrderId();
         var oldOrderOpt = orderRepository.findById(id);
         if (oldOrderOpt.isEmpty()) {
             throw new NoEntityFoundException("Заказ с id" + id + "не найден.");

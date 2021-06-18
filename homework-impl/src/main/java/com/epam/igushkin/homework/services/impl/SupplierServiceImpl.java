@@ -59,12 +59,12 @@ public class SupplierServiceImpl implements SupplierService {
     /**
      * Обвновляет данные поставщика в репозитории.
      *
-     * @param id уникальный номер поставщика.
      * @param supplier данные для обновления поставщика.
      * @return обновленный поставщик.
      */
     @Override
-    public Supplier update(Integer id, Supplier supplier) {
+    public Supplier update(Supplier supplier) {
+        var id = supplier.getSupplierId();
         var oldSupplierOpt = supplierRepository.findById(id);
         if (oldSupplierOpt.isEmpty()) {
             throw new NoEntityFoundException("Поставщик с id" + id + "не найден.");
