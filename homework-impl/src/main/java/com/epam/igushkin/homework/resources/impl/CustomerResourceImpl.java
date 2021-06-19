@@ -6,6 +6,7 @@ import com.epam.igushkin.homework.domain.entity.Customer;
 import com.epam.igushkin.homework.dto.CustomerDTO;
 import com.epam.igushkin.homework.logger.Logging;
 import com.epam.igushkin.homework.resources.CustomerResource;
+import com.epam.igushkin.homework.services.CustomerService;
 import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import com.epam.igushkin.homework.validator.CustomerDTOValidator;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerResourceImpl implements CustomerResource {
 
-    private final CustomerServiceImpl customerService;
+    private final CustomerService customerService;
     private final CustomerToDTOConverter customerToDTOConverter;
     private final DtoToCustomerConverter dtoToCustomerConverter;
 

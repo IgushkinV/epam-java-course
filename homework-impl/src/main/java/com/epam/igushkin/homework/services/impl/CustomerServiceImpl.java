@@ -16,13 +16,13 @@ import java.util.Locale;
 /**
  * Содержит реализацию методов для работы с репозиторием CustomerRepository.
  */
-@Service
+
 @Slf4j
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final MessageSource errorSource;
+    //private final MessageSource errorSource;
 
     /**
      * Сохраняет заказчика в репозиторий.
@@ -57,7 +57,8 @@ public class CustomerServiceImpl implements CustomerService {
         var customerOpt = customerRepository.findById(id);
         log.debug("findById() - Найден заказчик {}", customerOpt);
         Object[] args = {id};
-        String message = errorSource.getMessage("noCustomer", args, Locale.getDefault());
+        String message = "Запись не найдена.";
+        //String message = errorSource.getMessage("noCustomer", args, Locale.getDefault());
         return customerOpt.orElseThrow(() -> new NoEntityFoundException(message));
     }
 

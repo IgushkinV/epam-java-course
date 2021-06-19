@@ -55,6 +55,7 @@
         <spring-data-jpa.version>2.2.7.RELEASE</spring-data-jpa.version>
         <all-spring-boot-starter.version>2.5.0</all-spring-boot-starter.version>
         <h2.version>1.4.200</h2.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -102,9 +103,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit-jupiter-engine.version}</version>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
