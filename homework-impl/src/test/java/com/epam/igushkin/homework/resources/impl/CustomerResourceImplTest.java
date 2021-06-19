@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,8 +19,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CustomerResource.class)
 @RunWith(SpringRunner.class)
+@WebMvcTest(CustomerResource.class)
+@ContextConfiguration(classes = {CustomerServiceImpl.class, CustomerResourceImpl.class,
+        CustomerToDTOConverter.class, DtoToCustomerConverter.class})
 class CustomerResourceImplTest {
 
     @Autowired
@@ -43,9 +46,9 @@ class CustomerResourceImplTest {
                 .setCustomerName("Vasyn");
 
         when(customerService.findById(1)).thenReturn(customer);
-        mockMvc.perform(MockMvcRequestBuilders.get("/customer/1"))
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/customer/1"))
                 .andExpect(status().isOk());
-
 
     }
 

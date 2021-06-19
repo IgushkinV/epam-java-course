@@ -2,6 +2,7 @@ package com.epam.igushkin.homework.converters.order;
 
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.dto.OrderDTO;
+import com.epam.igushkin.homework.services.CustomerService;
 import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class DtoToOrderConverter implements Converter<OrderDTO, Order> {
 
-    private final CustomerServiceImpl customerService;
+    private final CustomerService customerService;
 
     @Override
     public Order convert(OrderDTO orderDTO) {
