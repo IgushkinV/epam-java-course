@@ -39,7 +39,7 @@ public class SupplierServiceImpl implements SupplierService {
      */
     @Override
     public List<Supplier> getAll() {
-        return supplierRepository.findAll();
+        return (List<Supplier>) supplierRepository.findAll();
     }
 
     /**
