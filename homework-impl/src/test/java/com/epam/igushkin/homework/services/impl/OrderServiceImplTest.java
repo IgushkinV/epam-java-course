@@ -36,9 +36,9 @@ public class OrderServiceImplTest {
     public void testFindByIdReturnsRightOrder() {
         var orders = getOrders();
         var testOrder = orders.get(0);
-        orderService.save(testOrder);
-        var savedOrder = orderService.findById(1);
-        assertEquals(testOrder.getOrderNumber(), savedOrder.getOrderNumber());
+        var savedOrder = orderService.save(testOrder);
+        var returnedOrder = orderService.findById(savedOrder.getOrderId());
+        assertEquals(testOrder.getOrderNumber(), returnedOrder.getOrderNumber());
     }
 
     @Test
