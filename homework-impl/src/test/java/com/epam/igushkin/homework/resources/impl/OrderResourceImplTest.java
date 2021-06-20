@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         DtoToOrderConverter.class,
         MyExceptionHandler.class
 })
-public class OrderServiceImplTest {
+public class OrderResourceImplTest {
 
     @Autowired
     MockMvc mockMvc;
