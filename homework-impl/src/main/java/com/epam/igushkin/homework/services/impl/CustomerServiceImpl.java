@@ -7,11 +7,10 @@ import com.epam.igushkin.homework.repository.CustomerRepository;
 import com.epam.igushkin.homework.services.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Содержит реализацию методов для работы с репозиторием CustomerRepository.
@@ -22,7 +21,9 @@ import java.util.Locale;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    //private final MessageSource errorSource;
+
+    @Autowired
+    private MessageSource errorSource;
 
     /**
      * Сохраняет заказчика в репозиторий.

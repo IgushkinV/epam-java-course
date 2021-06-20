@@ -10,6 +10,7 @@ import com.epam.igushkin.homework.services.CustomerService;
 import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.json.JSONArray;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -23,14 +24,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CustomerResource.class)
-@ContextConfiguration(classes = {CustomerServiceImpl.class, CustomerResourceImpl.class,
-        CustomerToDTOConverter.class, DtoToCustomerConverter.class, MyExceptionHandler.class})
+@ContextConfiguration(classes = {
+        CustomerServiceImpl.class,
+        CustomerResourceImpl.class,
+        CustomerToDTOConverter.class,
+        DtoToCustomerConverter.class,
+        MyExceptionHandler.class})
 class CustomerResourceImplTest {
 
     @Autowired
@@ -47,14 +54,8 @@ class CustomerResourceImplTest {
 
     @Test
     public void testGetCustomerReturnsRightCustomer() throws Exception {
-        Customer customer = new Customer()
-                .setCustomerId(1)
-                .setPhone("+1-1111")
-                .setCustomerName("Vasyn");
-        CustomerDTO customerDTO = new CustomerDTO()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("Vasyn");
+        Customer customer = getTestCustomer();
+        CustomerDTO customerDTO = getTestDTO();
         when(customerService.findById(1)).thenReturn(customer);
         when(customerToDTOConverter.convert(customer)).thenReturn(customerDTO);
         mockMvc.perform(MockMvcRequestBuilders
@@ -67,14 +68,8 @@ class CustomerResourceImplTest {
 
     @Test
     public void testPostReturnsSameCustomer() throws Exception {
-        Customer customer = new Customer()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("Vasyn");
-        CustomerDTO customerDTO = new CustomerDTO()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("Vasyn");
+        Customer customer = getTestCustomer();
+        CustomerDTO customerDTO = getTestDTO();
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(customerDTO);
         when(customerService.save(customer)).thenReturn(customer);
@@ -120,14 +115,8 @@ class CustomerResourceImplTest {
 
     @Test
     public void testUpdateCustomerReturnsUpdatedEntity() throws Exception {
-        Customer customer2 = new Customer()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("VasynUpd");
-        CustomerDTO customerDTO = new CustomerDTO()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("VasynUpd");
+        Customer customer2 = getTestCustomer();
+        CustomerDTO customerDTO = getTestDTO();
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(customerDTO);
         when(dtoToCustomerConverter.convert(customerDTO)).thenReturn(customer2);
@@ -138,21 +127,15 @@ class CustomerResourceImplTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customer_name").value("VasynUpd"))
+                .andExpect(jsonPath("$.customer_name").value("Vasyn"))
                 .andDo(print())
                 .andReturn();
     }
 
     @Test
     public void testUpdateCustomerReturns404() throws Exception {
-        Customer customer2 = new Customer()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("VasynUpd");
-        CustomerDTO customerDTO = new CustomerDTO()
-                .setCustomerId(1)
-                .setPhone("+7-1111")
-                .setCustomerName("VasynUpd");
+        Customer customer2 = getTestCustomer();
+        CustomerDTO customerDTO = getTestDTO();
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(customerDTO);
         when(dtoToCustomerConverter.convert(customerDTO)).thenReturn(customer2);
@@ -166,5 +149,55 @@ class CustomerResourceImplTest {
                 .andReturn();
         String message = "В базе не существует запись с указанным id.";
         Assertions.assertEquals(message, result.getResponse().getErrorMessage());
+    }
+
+    @Test
+    public void testPostCustomerReturns400Status() throws Exception {
+        CustomerDTO customerDTO = new CustomerDTO()
+                .setCustomerId(1)
+                //Номер телефона не проходит проверку валидатором. Должен начинаться на +7-.
+                .setPhone("+8-1111")
+                .setCustomerName("Vasyn");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(customerDTO);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGetAllCustomersReturnsListOfTwoElement() throws Exception {
+        Customer customer = getTestCustomer();
+        CustomerDTO customerDTO = getTestDTO();
+        List<Customer> testList = List.of(customer, customer);
+
+        when(customerService.getAll()).thenReturn(testList);
+        when(customerToDTOConverter.convert(customer)).thenReturn(customerDTO);
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.get("/customer/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+       String stringBody = result.getResponse().getContentAsString();
+       JSONArray array = new JSONArray(stringBody);
+
+       Assertions.assertEquals(2, array.length());
+    }
+
+    private Customer getTestCustomer() {
+        return new Customer()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("Vasyn");
+    }
+
+    private CustomerDTO getTestDTO() {
+        return new CustomerDTO()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("Vasyn");
     }
 }

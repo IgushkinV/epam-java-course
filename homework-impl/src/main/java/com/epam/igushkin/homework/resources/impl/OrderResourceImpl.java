@@ -4,7 +4,6 @@ import com.epam.igushkin.homework.converters.order.DtoToOrderConverter;
 import com.epam.igushkin.homework.converters.order.OrderToDTOConverter;
 import com.epam.igushkin.homework.dto.OrderDTO;
 import com.epam.igushkin.homework.resources.OrderResource;
-import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import com.epam.igushkin.homework.services.impl.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 public class OrderResourceImpl implements OrderResource {
 
     private final OrderServiceImpl orderService;
-    private final CustomerServiceImpl customerService;
     private final OrderToDTOConverter orderToDTOConverter;
     private final DtoToOrderConverter dtoToOrderConverter;
 
