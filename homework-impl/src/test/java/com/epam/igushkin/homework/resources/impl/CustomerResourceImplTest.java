@@ -3,54 +3,168 @@ package com.epam.igushkin.homework.resources.impl;
 import com.epam.igushkin.homework.converters.customer.CustomerToDTOConverter;
 import com.epam.igushkin.homework.converters.customer.DtoToCustomerConverter;
 import com.epam.igushkin.homework.domain.entity.Customer;
+import com.epam.igushkin.homework.dto.CustomerDTO;
+import com.epam.igushkin.homework.exceptions.NoEntityFoundException;
 import com.epam.igushkin.homework.resources.CustomerResource;
 import com.epam.igushkin.homework.services.CustomerService;
 import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CustomerResource.class)
 @ContextConfiguration(classes = {CustomerServiceImpl.class, CustomerResourceImpl.class,
-        CustomerToDTOConverter.class, DtoToCustomerConverter.class})
+        CustomerToDTOConverter.class, DtoToCustomerConverter.class, MyExceptionHandler.class})
 class CustomerResourceImplTest {
 
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     CustomerToDTOConverter customerToDTOConverter;
 
-    @Autowired
+    @MockBean
     DtoToCustomerConverter dtoToCustomerConverter;
 
     @MockBean
     CustomerService customerService;
 
-
     @Test
-    public void test() throws Exception {
+    public void testGetCustomerReturnsRightCustomer() throws Exception {
         Customer customer = new Customer()
                 .setCustomerId(1)
                 .setPhone("+1-1111")
                 .setCustomerName("Vasyn");
-
+        CustomerDTO customerDTO = new CustomerDTO()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("Vasyn");
         when(customerService.findById(1)).thenReturn(customer);
+        when(customerToDTOConverter.convert(customer)).thenReturn(customerDTO);
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/customer/1"))
-                .andExpect(status().isOk());
-
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.customer_name").value("Vasyn"))
+                .andReturn();
     }
 
+    @Test
+    public void testPostReturnsSameCustomer() throws Exception {
+        Customer customer = new Customer()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("Vasyn");
+        CustomerDTO customerDTO = new CustomerDTO()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("Vasyn");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(customerDTO);
+        when(customerService.save(customer)).thenReturn(customer);
+        when(dtoToCustomerConverter.convert(customerDTO)).thenReturn(customer);
+        when(customerToDTOConverter.convert(customer)).thenReturn(customerDTO);
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.post("/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customer_name").value("Vasyn"))
+                .andDo(print())
+                .andReturn();
+    }
 
+    @Test
+    public void testDeleteReturnsTrue() throws Exception {
+        when(customerService.delete(1)).thenReturn(true);
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/customer/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+        Assertions.assertEquals("true", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testDeleteReturnsFalse() throws Exception {
+        when(customerService.delete(1)).thenReturn(false);
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/customer/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+        Assertions.assertEquals("false", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testGetCustomerReturnsStatus404() throws Exception {
+        when(customerService.findById(1)).thenThrow(new NoEntityFoundException("Выброс из тестов."));
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/customer/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdateCustomerReturnsUpdatedEntity() throws Exception {
+        Customer customer2 = new Customer()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("VasynUpd");
+        CustomerDTO customerDTO = new CustomerDTO()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("VasynUpd");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(customerDTO);
+        when(dtoToCustomerConverter.convert(customerDTO)).thenReturn(customer2);
+        when(customerService.update(customer2)).thenReturn(customer2);
+        when(customerToDTOConverter.convert(customer2)).thenReturn(customerDTO);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/customer/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customer_name").value("VasynUpd"))
+                .andDo(print())
+                .andReturn();
+    }
+
+    @Test
+    public void testUpdateCustomerReturns404() throws Exception {
+        Customer customer2 = new Customer()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("VasynUpd");
+        CustomerDTO customerDTO = new CustomerDTO()
+                .setCustomerId(1)
+                .setPhone("+7-1111")
+                .setCustomerName("VasynUpd");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(customerDTO);
+        when(dtoToCustomerConverter.convert(customerDTO)).thenReturn(customer2);
+        when(customerService.update(customer2)).thenThrow(new NoEntityFoundException("Из тестов."));
+        MvcResult result = mockMvc.perform(
+                MockMvcRequestBuilders.put("/customer/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andDo(print())
+                .andReturn();
+        String message = "В базе не существует запись с указанным id.";
+        Assertions.assertEquals(message, result.getResponse().getErrorMessage());
+    }
 }

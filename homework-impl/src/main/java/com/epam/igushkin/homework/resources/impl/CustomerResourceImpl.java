@@ -7,7 +7,6 @@ import com.epam.igushkin.homework.dto.CustomerDTO;
 import com.epam.igushkin.homework.logger.Logging;
 import com.epam.igushkin.homework.resources.CustomerResource;
 import com.epam.igushkin.homework.services.CustomerService;
-import com.epam.igushkin.homework.services.impl.CustomerServiceImpl;
 import com.epam.igushkin.homework.validator.CustomerDTOValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,17 +74,13 @@ public class CustomerResourceImpl implements CustomerResource {
     /**
      * Обновляет данные заказчика по id.
      *
-     * @param id          уникальный номер заказчика в базе.
      * @param customerDTO содержит данные для обновления заказчика.
      * @return CustomerDTO с обновленными данными заказчика.
      */
     @Logging
     @Override
-    public CustomerDTO updateCustomer(Integer id, @Valid CustomerDTO customerDTO) {
-        var customer = new Customer()
-                .setCustomerId(id)
-                .setCustomerName(customerDTO.getCustomerName())
-                .setPhone(customerDTO.getPhone());
+    public CustomerDTO updateCustomer(@Valid CustomerDTO customerDTO) {
+        var customer = dtoToCustomerConverter.convert(customerDTO);
         var updatedCustomer = customerService.update(customer);
         log.info("updateCustomer() - {}", updatedCustomer);
         return customerToDTOConverter.convert(updatedCustomer);

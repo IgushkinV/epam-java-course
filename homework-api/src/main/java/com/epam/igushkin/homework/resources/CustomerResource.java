@@ -17,9 +17,8 @@ public interface CustomerResource {
     @PostMapping
     CustomerDTO addCustomer(@RequestBody CustomerDTO customerDTO);
 
-    @PutMapping("/{id}")
-    CustomerDTO updateCustomer(@PathVariable Integer id,
-                               @RequestBody CustomerDTO customerDTO);
+    @PutMapping()
+    CustomerDTO updateCustomer(@RequestBody CustomerDTO customerDTO);
 
     @DeleteMapping("/{id}")
     boolean deleteCustomer(@PathVariable Integer id);
