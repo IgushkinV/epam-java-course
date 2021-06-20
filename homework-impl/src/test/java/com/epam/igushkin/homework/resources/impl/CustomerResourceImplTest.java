@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         CustomerToDTOConverter.class,
         DtoToCustomerConverter.class,
         MyExceptionHandler.class})
-class CustomerResourceImplTest {
+public class CustomerResourceImplTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -119,6 +119,7 @@ class CustomerResourceImplTest {
         CustomerDTO customerDTO = getTestDTO();
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(customerDTO);
+
         when(dtoToCustomerConverter.convert(customerDTO)).thenReturn(customer2);
         when(customerService.update(customer2)).thenReturn(customer2);
         when(customerToDTOConverter.convert(customer2)).thenReturn(customerDTO);

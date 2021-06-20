@@ -30,7 +30,7 @@
         <maven-compiler-plugin.target>11</maven-compiler-plugin.target>
         <jacoco-maven-plugin.haltOnFailure>true</jacoco-maven-plugin.haltOnFailure>
         <!--TODO: Поставить обратно 0.7-->
-        <jacoco-maven-plugin.minimum>0.0</jacoco-maven-plugin.minimum>
+        <jacoco-maven-plugin.minimum>0.6</jacoco-maven-plugin.minimum>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -101,7 +101,6 @@
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -114,7 +113,6 @@
                 <version>${h2.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
@@ -141,31 +139,18 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven-war-plugin.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax.servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <!-- Для маппинга в JSON -->
- <!--           <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson-databind.version}</version>
-            </dependency>-->
             <!-- JSR 349 -->
             <dependency>
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>${validation-api.version}</version>
             </dependency>
-            <!-- Spring Data    -->
-            <!--<dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-jpa</artifactId>
-                <version>${spring-data-jpa.version}</version>
-            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -231,6 +216,13 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
+                            <excludes>
+                                <exclude>**/config/**/*</exclude>
+                                <exclude>**/domain/**/*</exclude>
+                                <exclude>**/repository/**/*</exclude>
+                                <exclude>**/exceptions/**/*</exclude>
+                                <exclude>**/converters/**/*</exclude>
+                            </excludes>
                             <haltOnFailure>${jacoco-maven-plugin.haltOnFailure}</haltOnFailure>
                             <rules>
                                 <rule>
