@@ -6,7 +6,7 @@
     </appender>
 
     <root additivity="false" >
-        <level value="debug" />
+        <level value="info" />
         <appender-ref ref="STDOUT"/>
     </root>
 

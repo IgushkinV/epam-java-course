@@ -1,4 +1,5 @@
 package com.epam.igushkin.homework.resources.impl;
+
 import com.epam.igushkin.homework.converters.product.DtoToProductConverter;
 import com.epam.igushkin.homework.converters.product.ProductToDTOConverter;
 import com.epam.igushkin.homework.dto.ProductDTO;
@@ -7,11 +8,13 @@ import com.epam.igushkin.homework.services.impl.ProductServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Slf4j@RequiredArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 public class ProductResourceImpl implements ProductResource {
 
     private final ProductServiceImpl productService;
@@ -67,11 +70,8 @@ public class ProductResourceImpl implements ProductResource {
      */
     @Override
     public ProductDTO updateProduct(ProductDTO productDTO) {
-        var product = productService.findById(productDTO.getProductId());
-        product.setProductName(productDTO.getProductName())
-                .setUnitPrice(productDTO.getUnitPrice())
-                .setDiscontinued(productDTO.isDiscontinued());
-        var updatedProduct = productService.save(product);
+        var product = dtoToProductConverter.convert(productDTO);
+        var updatedProduct = productService.update(product);
         log.info("updateProduct() - {}", updatedProduct);
         return productToDTOConverter.convert(updatedProduct);
     }

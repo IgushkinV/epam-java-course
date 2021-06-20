@@ -6,6 +6,7 @@ import com.epam.igushkin.homework.repository.SupplierRepository;
 import com.epam.igushkin.homework.services.SupplierService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,9 @@ import java.util.Locale;
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
-    private final MessageSource errorSource;
+
+    @Autowired
+    private MessageSource errorSource;
 
     /**
      * Сохраняет поставщика в репозитории.
@@ -39,7 +42,7 @@ public class SupplierServiceImpl implements SupplierService {
      */
     @Override
     public List<Supplier> getAll() {
-        return supplierRepository.findAll();
+        return (List<Supplier>) supplierRepository.findAll();
     }
 
     /**
@@ -52,19 +55,20 @@ public class SupplierServiceImpl implements SupplierService {
     public Supplier findById(Integer id) {
         var supplierOptional = supplierRepository.findById(id);
         Object[] args = {id.intValue()};
-        String exceptionMessageLocale = errorSource.getMessage("noSupplier", args, Locale.getDefault());
-        return supplierOptional.orElseThrow(() -> new NoEntityFoundException(exceptionMessageLocale));
+        var message = "Поставщик не найден";
+        //String exceptionMessageLocale = errorSource.getMessage("noSupplier", args, Locale.getDefault());
+        return supplierOptional.orElseThrow(() -> new NoEntityFoundException(message));
     }
 
     /**
      * Обвновляет данные поставщика в репозитории.
      *
-     * @param id уникальный номер поставщика.
      * @param supplier данные для обновления поставщика.
      * @return обновленный поставщик.
      */
     @Override
-    public Supplier update(Integer id, Supplier supplier) {
+    public Supplier update(Supplier supplier) {
+        var id = supplier.getSupplierId();
         var oldSupplierOpt = supplierRepository.findById(id);
         if (oldSupplierOpt.isEmpty()) {
             throw new NoEntityFoundException("Поставщик с id" + id + "не найден.");

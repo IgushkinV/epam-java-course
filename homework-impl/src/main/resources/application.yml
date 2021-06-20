@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/epamcourses?currentSchema=igushkin
+    username: usr
+    password: pass
+
+logging:
+  enabled: true

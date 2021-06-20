@@ -2,10 +2,12 @@ package com.epam.igushkin.homework.services.impl;
 
 import com.epam.igushkin.homework.domain.entity.Order;
 import com.epam.igushkin.homework.exceptions.NoEntityFoundException;
+import com.epam.igushkin.homework.logger.Logging;
 import com.epam.igushkin.homework.repository.OrderRepository;
 import com.epam.igushkin.homework.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,8 @@ import java.util.Locale;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final MessageSource errorSource;
+    @Autowired
+    private MessageSource messageSource;
 
     /**
      * Сохраняет заказ в репозитории.
@@ -26,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
      * @param order
      * @return Order сохраненный заказ.
      */
+    @Logging
     @Override
     public Order save(Order order) {
         return orderRepository.save(order);
@@ -38,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public List<Order> getAll() {
-        return orderRepository.findAll();
+        return (List<Order>) orderRepository.findAll();
     }
 
     /**
@@ -51,22 +55,23 @@ public class OrderServiceImpl implements OrderService {
     public Order findById(Integer id) {
         var orderOpt = orderRepository.findById(id);
         Object[] args = {id.intValue()};
-        String exceptionMessageLocale = errorSource.getMessage("noOrder", args, Locale.getDefault());
-        return orderOpt.orElseThrow(() -> new NoEntityFoundException(exceptionMessageLocale));
+        String message = "Нет сущности.";
+        //String exceptionMessageLocale = messageSource.getMessage("noOrder", args, Locale.getDefault());
+        return orderOpt.orElseThrow(() -> new NoEntityFoundException(message));
     }
 
     /**
      * Обновляет данные заказа в репозитории.
      *
-     * @param id уникальный номер заказа
      * @param order данные для обновления заказа.
      * @return обновленынй заказ.
      */
     @Override
-    public Order update(Integer id, Order order) {
+    public Order update(Order order) {
+        var id = order.getOrderId();
         var oldOrderOpt = orderRepository.findById(id);
         if (oldOrderOpt.isEmpty()) {
-            throw new NoEntityFoundException("Заказ с id" + id + "не найден.");
+            throw new NoEntityFoundException("Заказ с id " + id + " не найден.");
         }
         var oldOrder = oldOrderOpt.get();
         oldOrder.setOrderNumber(order.getOrderNumber())

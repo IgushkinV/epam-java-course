@@ -1,4 +1,5 @@
 package com.epam.igushkin.homework.resources.impl;
+
 import com.epam.igushkin.homework.converters.supplier.DtoToSupplierConverter;
 import com.epam.igushkin.homework.converters.supplier.SupplierToDTOConverter;
 import com.epam.igushkin.homework.dto.SupplierDTO;
@@ -7,6 +8,7 @@ import com.epam.igushkin.homework.services.impl.SupplierServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,7 @@ public class SupplierResourceImpl implements SupplierResource {
 
     /**
      * Получает поставщика по его id из базы.
+     *
      * @param id уникальный номер поставщика в базе.
      * @return SupplierDTO, содержит данные полученного поставщика.
      */
@@ -70,10 +73,8 @@ public class SupplierResourceImpl implements SupplierResource {
      */
     @Override
     public SupplierDTO updateSupplier(SupplierDTO supplierDTO) {
-        var supplier = supplierService.findById(supplierDTO.getSupplierId());
-        supplier.setCompanyName(supplierDTO.getCompanyName())
-                .setPhone(supplierDTO.getPhone());
-        var updatedSupplier = supplierService.save(supplier);
+        var supplier = dtoToSupplierConverter.convert(supplierDTO);
+        var updatedSupplier = supplierService.update(supplier);
         log.info("updateSupplier() - {}", updatedSupplier);
         return supplierToDTOConverter.convert(updatedSupplier);
     }

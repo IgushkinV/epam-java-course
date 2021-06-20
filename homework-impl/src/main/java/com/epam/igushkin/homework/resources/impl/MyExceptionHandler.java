@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class MyExceptionHandler {
 
     @ExceptionHandler(NoEntityFoundException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "В базе не существует запись с указанным id.")
-    public String handleException (NoEntityFoundException e) {
-        log.debug("handleException() - Ошибка при обращении к базе - запрос несуществующей записи.", e);
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "В базе не существует запись с указанным id.")
+    public String handleException(NoEntityFoundException e) {
+        log.warn("handleException() - Ошибка при обращении к базе - запрос несуществующей записи.", e);
         return e.getMessage();
     }
 }

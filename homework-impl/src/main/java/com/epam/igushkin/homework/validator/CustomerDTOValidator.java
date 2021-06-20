@@ -1,6 +1,7 @@
 package com.epam.igushkin.homework.validator;
 
 import com.epam.igushkin.homework.dto.CustomerDTO;
+import com.epam.igushkin.homework.logger.Logging;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -14,6 +15,7 @@ public class CustomerDTOValidator implements Validator {
         return CustomerDTO.class.equals(aClass);
     }
 
+    @Logging
     @Override
     public void validate(Object o, Errors errors) {
         CustomerDTO customerDTO = (CustomerDTO) o;

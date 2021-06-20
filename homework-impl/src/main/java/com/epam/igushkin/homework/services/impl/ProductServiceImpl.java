@@ -6,6 +6,7 @@ import com.epam.igushkin.homework.repository.ProductRepository;
 import com.epam.igushkin.homework.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ import java.util.Locale;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final MessageSource errorSource;
+    @Autowired
+    private MessageSource errorSource;
 
     /**
      * Сохраняет продукт в репозитроий.
@@ -38,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public List<Product> getAll() {
-        return productRepository.findAll();
+        return (List<Product>) productRepository.findAll();
     }
 
     /**
@@ -51,19 +53,20 @@ public class ProductServiceImpl implements ProductService {
     public Product findById(Integer id) {
         var productOptional = productRepository.findById(id);
         Object[] args = {id.intValue()};
-        String exceptionMessageLocale = errorSource.getMessage("noProduct", args, Locale.getDefault());
-        return productOptional.orElseThrow(() -> new NoEntityFoundException(exceptionMessageLocale));
+        var message = "Продукт не найден.";
+        //String exceptionMessageLocale = errorSource.getMessage("noProduct", args, Locale.getDefault());
+        return productOptional.orElseThrow(() -> new NoEntityFoundException(message));
     }
 
     /**
      * Обновляет данные продукт в репозитории.
      *
-     * @param id уникальный номер продукта.
      * @param product данные для обновления продукта.
      * @return обновленный продукт.
      */
     @Override
-    public Product update(Integer id, Product product) {
+    public Product update(Product product) {
+        var id = product.getProductId();
         var oldProductOpt = productRepository.findById(id);
         if (oldProductOpt.isEmpty()) {
             throw new NoEntityFoundException("Заказ с id" + id + "не найден.");
